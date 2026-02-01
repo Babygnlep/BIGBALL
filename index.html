@@ -8,10 +8,13 @@
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
-<style>
-  <script type="module">
+  <button id="load">โหลดบิล</button>
+<div id="list"></div>
+
+<script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-  import { getFirestore } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+  import { getFirestore, collection, getDocs }
+    from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "YOUR_API_KEY",
@@ -24,8 +27,19 @@
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
+
+  document.getElementById("load").onclick = async () => {
+    const snap = await getDocs(collection(db, "bills"));
+    list.innerHTML = "";
+    snap.forEach(doc => {
+      const d = doc.data();
+      list.innerHTML += `<p>${d.title} : ${d.total}</p>`;
+    });
+  };
 </script>
 
+
+<style>
 /* ─── Reset & Root ─── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
