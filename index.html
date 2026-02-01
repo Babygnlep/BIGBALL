@@ -530,6 +530,175 @@ button.main.success:hover {
 
 .auto-del-notice .ad-text strong { color: var(--text-2); font-weight: 600; }
 
+/* ─── Overdue Warning Banner ─── */
+.overdue-banner {
+  display: flex;
+  align-items: center;
+  background: linear-gradient(135deg, rgba(248,113,113,.15), rgba(251,191,36,.1));
+  border: 1px solid rgba(248,113,113,.25);
+  border-radius: var(--radius);
+  padding: 14px 16px;
+  margin-bottom: 20px;
+  animation: fadeUp .25s ease;
+}
+
+.overdue-banner-left {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.overdue-icon { font-size: 22px; line-height: 1.2; }
+
+.overdue-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--danger);
+}
+
+.overdue-sub {
+  font-size: 12px;
+  color: var(--text-3);
+  margin-top: 2px;
+}
+
+/* ─── Recall Card ─── */
+.recall-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 16px 18px;
+  margin-bottom: 14px;
+  transition: border-color .2s;
+  animation: slideIn .22s ease both;
+}
+.recall-card:hover { border-color: var(--border-hi); }
+.recall-card.overdue-card { border-color: rgba(248,113,113,.3); }
+
+.recall-card .recall-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.recall-card .recall-name {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-1);
+}
+
+.recall-card .recall-date {
+  font-size: 12px;
+  color: var(--text-3);
+  margin-top: 2px;
+}
+
+.overdue-days {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--danger);
+  background: var(--danger-lo);
+  border: 1px solid rgba(248,113,113,.2);
+  padding: 3px 9px;
+  border-radius: 14px;
+  white-space: nowrap;
+}
+
+.ok-days {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-3);
+  background: var(--surface-hi);
+  border: 1px solid var(--border);
+  padding: 3px 9px;
+  border-radius: 14px;
+  white-space: nowrap;
+}
+
+/* ─── Return Item Row ─── */
+.return-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface-hi);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 9px 12px;
+  margin-bottom: 7px;
+  transition: border-color .18s;
+}
+.return-item:hover { border-color: var(--border-hi); }
+
+.return-item .ri-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.return-item .ri-icon {
+  width: 30px; height: 30px;
+  border-radius: 8px;
+  background: var(--accent-lo);
+  color: var(--accent);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+}
+
+.return-item .ri-name { font-size: 13px; font-weight: 500; color: var(--text-1); }
+.return-item .ri-qty { font-size: 11px; color: var(--text-3); margin-top: 1px; }
+
+.return-item .ri-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.return-item .ri-controls button {
+  width: 28px; height: 28px;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-2);
+  font-size: 15px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .15s;
+  font-family: 'Kanit';
+}
+
+.return-item .ri-controls button:hover {
+  border-color: var(--success);
+  color: var(--success);
+  background: var(--success-lo);
+}
+
+.return-item .ri-controls .ri-val {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-1);
+  min-width: 18px;
+  text-align: center;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+.return-item .ri-controls button.ri-done {
+  width: auto;
+  padding: 5px 10px;
+  border-radius: 7px;
+  border-color: rgba(52,211,153,.3);
+  background: var(--success-lo);
+  color: var(--success);
+  font-size: 11px;
+  font-weight: 600;
+  gap: 3px;
+}
+.return-item .ri-controls button.ri-done:hover {
+  background: rgba(52,211,153,.25);
+  border-color: rgba(52,211,153,.5);
+  color: var(--success);
+}
+
 /* ─── Bill Filter Tabs ─── */
 .filter-row {
   display: flex;
@@ -717,6 +886,9 @@ button.main.success:hover {
     <button onclick="showPage('out')">
       <span class="tab-icon">🚚</span> ของออก
     </button>
+    <button onclick="showPage('recall')">
+      <span class="tab-icon">🔄</span> คืน <span id="recallBadge" style="display:none;background:var(--danger);color:#fff;font-size:10px;padding:1px 6px;border-radius:10px;font-weight:700;">0</span>
+    </button>
     <button onclick="showPage('bill')">
       <span class="tab-icon">🧾</span> บิล
     </button>
@@ -787,6 +959,24 @@ button.main.success:hover {
       </button>
     </section>
 
+    <!-- ════════ RECALL PAGE ════════ -->
+    <section id="page-recall" class="page" style="padding-top:10px;">
+
+      <div id="overdueWarning" style="display:none;">
+        <div class="overdue-banner">
+          <div class="overdue-banner-left">
+            <span class="overdue-icon">⚠️</span>
+            <div>
+              <div class="overdue-title">มีของเช่าเกินเวลา!</div>
+              <div class="overdue-sub" id="overdueSubText"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="recallList"></div>
+    </section>
+
     <!-- ════════ BILL PAGE ════════ -->
     <section id="page-bill" class="page" style="padding-top:10px;">
 
@@ -846,7 +1036,7 @@ function save() {
 function showPage(p) {
   document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
   document.querySelectorAll('.topbar button').forEach(x => x.classList.remove('active'));
-  const map = { stock: 0, out: 1, bill: 2 };
+  const map = { stock: 0, out: 1, recall: 2, bill: 3 };
   document.getElementById('page-' + p).classList.add('active');
   document.querySelectorAll('.topbar button')[map[p]].classList.add('active');
 }
@@ -973,7 +1163,100 @@ function clearAllPaid() {
   save(); render();
 }
 
-// ─── helpers ───
+// ─── เรียกคืน ───
+const OVERDUE_DAYS = 7; // เกิน กี่วัน ให้เตือน
+
+function getDaysSince(dateStr) {
+  const d = new Date(dateStr);
+  const now = new Date();
+  return Math.floor((now - d) / (1000 * 60 * 60 * 24));
+}
+
+// คืนรายชิ้น: คืน 1 ชิ้นของ itemName ใน บิล index i
+function returnItem(billIdx, itemName) {
+  const bill = bills[billIdx];
+  const item = bill.items.find(x => x.name === itemName);
+  if (!item || item.qty <= 0) return;
+
+  // คืนเข้า stock
+  const stock = items.find(x => x.name === itemName);
+  if (stock) stock.qty++;
+
+  item.qty--;
+  // ถ้า item นั้นเหลือ 0 ให้ filter ออก
+  bill.items = bill.items.filter(x => x.qty > 0);
+
+  // ถ้าไม่มี items เหลือ = คืนทั้งหมด → markPaid
+  if (bill.items.length === 0) {
+    bill.status = 'paid';
+    bill.remaining = 0;
+    bill.paidAt = Date.now();
+  }
+
+  save(); render(); renderRecall();
+}
+
+function renderRecall() {
+  // เก็บ pending bills เท่านั้น
+  const pending = bills
+    .map((b, i) => ({ ...b, idx: i }))
+    .filter(b => b.status === 'pending');
+
+  // หา overdue
+  const overdue = pending.filter(b => getDaysSince(b.date) > OVERDUE_DAYS);
+
+  // ── overdue banner ──
+  const banner = document.getElementById('overdueWarning');
+  if (overdue.length > 0) {
+    banner.style.display = 'block';
+    document.getElementById('overdueSubText').textContent =
+      overdue.length + ' บิล เกิน ' + OVERDUE_DAYS + ' วัน รอคืน';
+  } else {
+    banner.style.display = 'none';
+  }
+
+  // ── recall badge on tab ──
+  const badge = document.getElementById('recallBadge');
+  if (overdue.length > 0) {
+    badge.style.display = 'inline-block';
+    badge.textContent = overdue.length;
+  } else {
+    badge.style.display = 'none';
+  }
+
+  // ── render cards ──
+  document.getElementById('recallList').innerHTML = pending.length
+    ? pending.map((b, ri) => {
+        const days = getDaysSince(b.date);
+        const isOver = days > OVERDUE_DAYS;
+        return `
+        <div class="recall-card ${isOver ? 'overdue-card' : ''}" style="animation-delay:${ri*.05}s">
+          <div class="recall-header">
+            <div>
+              <div class="recall-name">${b.billName}</div>
+              <div class="recall-date">เช่าตั้งแต่ ${b.date}</div>
+            </div>
+            <span class="${isOver ? 'overdue-days' : 'ok-days'}">${isOver ? '⚡ เกิน ' + days + ' วัน' : days + ' วัน'}</span>
+          </div>
+          <div>
+            ${b.items.map(it => `
+              <div class="return-item">
+                <div class="ri-left">
+                  <div class="ri-icon">📦</div>
+                  <div>
+                    <div class="ri-name">${it.name}</div>
+                    <div class="ri-qty">คงอยู่กับลูกค้า ${it.qty} ชิ้น</div>
+                  </div>
+                </div>
+                <div class="ri-controls">
+                  <button onclick="returnItem(${b.idx}, '${it.name}')" class="ri-done">↩ คืน</button>
+                </div>
+              </div>`).join('')}
+          </div>
+        </div>`;
+      }).join('')
+    : `<div class="empty-state"><div class="empty-icon">✅</div>ไม่มีของที่รอคืน</div>`;
+}
 function getBadgeHTML(bill) {
   if (bill.status === 'paid') return `<span class="badge paid">✓ จ่ายแล้ว</span>`;
   if (bill.payType === 'deposit') return `<span class="badge deposit">💰 มัดจำ</span>`;
@@ -1093,10 +1376,14 @@ function render() {
             </div>`}
         </div>`).join('')
     : `<div class="empty-state"><div class="empty-icon">📋</div>ไม่มีบิลในประเภทนี้</div>`;
+
+  // sync recall badge + page
+  renderRecall();
 }
 
 autoCleanup();
 render();
+renderRecall();
 </script>
 
 </body>
