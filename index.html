@@ -1181,7 +1181,15 @@ button.main.success:hover {
 }
 
 .pi-qty {
-  width: 80px;
+  width: 70px;
+  font-size: 13px;
+  color: var(--text-2);
+  text-align: right;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+.pi-queue {
+  width: 60px;
   font-size: 13px;
   color: var(--text-2);
   text-align: right;
@@ -1544,17 +1552,23 @@ function deleteItem(i) {
 
 // ─── Out ───
 function addOutByQty(i) {
-  const input = document.getElementById('outQty_' + i);
-  let qty = Number(input.value) || 1;
+  const qtyInput = document.getElementById('outQty_' + i);
+  const queueInput = document.getElementById('outQueue_' + i);
+  
+  let qty = Number(qtyInput.value) || 1;
+  let queue = Number(queueInput.value) || 1;
+  
   if (qty <= 0) qty = 1;
+  if (queue <= 0) queue = 1;
   if (qty > items[i].qty) qty = items[i].qty;
   if (items[i].qty <= 0) return;
 
   items[i].qty -= qty;
   const b = outItems.find(x => x.name === items[i].name);
-  b ? b.qty += qty : outItems.push({ name: items[i].name, qty: qty });
+  b ? (b.qty += qty, b.queue += queue) : outItems.push({ name: items[i].name, qty: qty, queue: queue });
 
-  input.value = '';
+  qtyInput.value = '';
+  queueInput.value = '';
   save(); render();
 }
 
@@ -1563,6 +1577,7 @@ function removeOut(i) {
   const it = items.find(x => x.name === b.name);
   if (it) it.qty++;
   b.qty--;
+  if (b.qty > 0 && b.queue > 0) b.queue--; // ลด queue ตาม
   if (b.qty <= 0) outItems.splice(i, 1);
   save(); render();
 }
@@ -1800,17 +1815,23 @@ function removeEditItem(itemName) {
 }
 
 function addEditItemByQty(stockIdx) {
-  const input = document.getElementById('editAddQty_' + stockIdx);
-  let qty = Number(input.value) || 1;
+  const qtyInput = document.getElementById('editAddQty_' + stockIdx);
+  const queueInput = document.getElementById('editAddQueue_' + stockIdx);
+  
+  let qty = Number(qtyInput.value) || 1;
+  let queue = Number(queueInput.value) || 1;
+  
   if (qty <= 0) qty = 1;
+  if (queue <= 0) queue = 1;
   if (qty > items[stockIdx].qty) qty = items[stockIdx].qty;
   if (items[stockIdx].qty <= 0) return;
 
   items[stockIdx].qty -= qty;
   const existing = editItems.find(x => x.name === items[stockIdx].name);
-  existing ? existing.qty += qty : editItems.push({ name: items[stockIdx].name, qty: qty });
+  existing ? (existing.qty += qty, existing.queue += queue) : editItems.push({ name: items[stockIdx].name, qty: qty, queue: queue });
 
-  input.value = '';
+  qtyInput.value = '';
+  queueInput.value = '';
   save();
   renderEdit();
 }
@@ -1891,6 +1912,7 @@ function renderEdit() {
             <div class="item-icon">✏️</div>
             <div>
               <div class="item-name">${item.name}</div>
+              <div class="item-qty" style="font-size:11px;color:var(--text-3);">${item.qty} ชิ้น • ${item.queue} คิว</div>
             </div>
           </div>
           <div class="edit-controls">
@@ -1933,7 +1955,8 @@ function renderEdit() {
           </div>
         </div>
         <div class="out-qty-wrap">
-          <input type="number" min="1" max="${it.qty}" placeholder="จำนวน" class="out-qty-input" id="editAddQty_${it.idx}" onkeydown="if(event.key==='Enter') addEditItemByQty(${it.idx})">
+          <input type="number" min="1" max="${it.qty}" placeholder="ชิ้น" class="out-qty-input" id="editAddQty_${it.idx}" onkeydown="if(event.key==='Enter') document.getElementById('editAddQueue_${it.idx}').focus()">
+          <input type="number" min="1" placeholder="คิว" class="out-qty-input" id="editAddQueue_${it.idx}" onkeydown="if(event.key==='Enter') addEditItemByQty(${it.idx})">
           <button class="add-out-btn" onclick="addEditItemByQty(${it.idx})">เพิ่ม</button>
         </div>
       </div>`).join('');
@@ -2027,7 +2050,8 @@ function render() {
           </div>
         </div>
         <div class="out-qty-wrap">
-          <input type="number" min="1" max="${it.qty}" placeholder="จำนวน" class="out-qty-input" id="outQty_${it.idx}" onkeydown="if(event.key==='Enter') addOutByQty(${it.idx})">
+          <input type="number" min="1" max="${it.qty}" placeholder="ชิ้น" class="out-qty-input" id="outQty_${it.idx}" onkeydown="if(event.key==='Enter') document.getElementById('outQueue_${it.idx}').focus()">
+          <input type="number" min="1" placeholder="คิว" class="out-qty-input" id="outQueue_${it.idx}" onkeydown="if(event.key==='Enter') addOutByQty(${it.idx})">
           <button class="add-out-btn" onclick="addOutByQty(${it.idx})">เพิ่ม</button>
         </div>
       </div>`).join('');
@@ -2045,7 +2069,7 @@ function render() {
             <div class="item-icon" style="background:var(--success-lo);color:var(--success);">✓</div>
             <div>
               <div class="item-name">${b.name}</div>
-              <div class="item-qty">× ${b.qty} ชิ้น</div>
+              <div class="item-qty">${b.qty} ชิ้น • ${b.queue} คิว</div>
             </div>
           </div>
           <button class="remove-out-btn" onclick="removeOut(${i})">−</button>
@@ -2094,7 +2118,7 @@ function render() {
             ${getBadgeHTML(b)}
           </div>
           <div class="bill-items-list">
-            ${b.items.map(it => `<span class="tag">${it.name} ×${it.qty}</span>`).join('')}
+            ${b.items.map(it => `<span class="tag">${it.name} ${it.qty}ชิ้น•${it.queue}คิว</span>`).join('')}
           </div>
           <div class="bill-price">
             ${b.price.toLocaleString()} <span>บาท</span>
@@ -2145,8 +2169,8 @@ function printPDF() {
     rowsHTML += '<tr style="' + (idx % 2 === 1 ? 'background:#f9fafb;' : '') + '">'
       + '<td style="text-align:center;">' + (idx + 1) + '</td>'
       + '<td>' + it.name + '</td>'
-      + '<td style="text-align:right;">' + it.qty + ' Q</td>'
-      + '<td style="text-align:right;">-</td>'
+      + '<td style="text-align:right;">' + it.qty + ' ชิ้น</td>'
+      + '<td style="text-align:right;">' + it.queue + ' คิว</td>'
       + '<td style="text-align:right;">-</td>'
       + '</tr>';
   });
@@ -2216,8 +2240,8 @@ function printPDF() {
     + '<table><thead><tr>'
     + '<th style="width:40px;">#</th>'
     + '<th>รายละเอียด</th>'
-    + '<th style="width:60px;">จำนวน</th>'
-    + '<th style="width:70px;">ราคาต่อหน่วย</th>'
+    + '<th style="width:70px;">จำนวน</th>'
+    + '<th style="width:60px;">คิว</th>'
     + '<th style="width:80px;">ยอดรวม</th>'
     + '</tr></thead><tbody>'
     + rowsHTML
@@ -2263,7 +2287,8 @@ function renderPreview() {
       <div class="preview-item">
         <span class="pi-num">${idx + 1}</span>
         <span class="pi-name">${it.name}</span>
-        <span class="pi-qty">${it.qty} Q</span>
+        <span class="pi-qty">${it.qty} ชิ้น</span>
+        <span class="pi-queue">${it.queue} คิว</span>
       </div>`;
   });
 
@@ -2310,7 +2335,8 @@ function renderPreview() {
       <div class="preview-item-header">
         <span style="width:40px;">#</span>
         <span style="flex:1;">รายละเอียด</span>
-        <span style="width:80px;text-align:right;">จำนวน</span>
+        <span style="width:70px;text-align:right;">จำนวน</span>
+        <span style="width:60px;text-align:right;">คิว</span>
       </div>
       ${itemsHTML}
     </div>
