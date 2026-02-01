@@ -963,6 +963,285 @@ button.main.success:hover {
 /* ─── Bill action row buttons small ─── */
 .btn-row { display: flex; gap: 8px; margin-top: 10px; }
 .btn-row button { flex: 1; }
+
+/* ─── Edit Item Row in Edit Page ─── */
+.edit-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface-hi);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 11px 14px;
+  margin-bottom: 8px;
+  transition: border-color .2s;
+  animation: slideIn .22s ease both;
+}
+.edit-item:hover { border-color: var(--border-hi); }
+
+.edit-item .item-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.edit-item .item-icon {
+  width: 34px; height: 34px;
+  border-radius: 9px;
+  background: var(--warning-lo);
+  color: var(--warning);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px;
+}
+
+.edit-item .item-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-1);
+}
+
+.edit-controls {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.edit-controls button {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  font-size: 17px;
+  line-height: 1;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .15s;
+  background: var(--surface);
+  color: var(--text-2);
+}
+
+.edit-controls button:hover {
+  border-color: var(--warning);
+  color: var(--warning);
+  background: var(--warning-lo);
+}
+
+.edit-controls .qty-val {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-1);
+  min-width: 22px;
+  text-align: center;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+.edit-controls button.remove-edit-item {
+  border-color: var(--danger-lo);
+  background: var(--danger-lo);
+  color: var(--danger);
+}
+.edit-controls button.remove-edit-item:hover {
+  background: rgba(248,113,113,.28);
+  border-color: rgba(248,113,113,.4);
+}
+
+/* Back button */
+.back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface-hi);
+  color: var(--text-2);
+  font-family: 'Kanit', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all .2s;
+  margin-bottom: 16px;
+}
+.back-btn:hover {
+  background: var(--border-hi);
+  color: var(--text-1);
+}
+
+/* ─── Preview Page Styles ─── */
+.preview-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-bottom: 20px;
+  animation: fadeUp .3s ease;
+}
+
+.preview-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 20px;
+}
+
+.ph-left { display: flex; flex-direction: column; gap: 8px; }
+
+.ph-logo {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-1);
+  line-height: 1.1;
+}
+
+.ph-company {
+  font-size: 11px;
+  color: var(--text-3);
+}
+
+.ph-right { text-align: right; }
+
+.ph-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--warning);
+  margin-bottom: 12px;
+}
+
+.ph-info { display: flex; flex-direction: column; gap: 4px; }
+
+.phi-row {
+  font-size: 12px;
+  color: var(--text-3);
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.phi-row strong { color: var(--text-1); }
+
+.preview-customer {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border);
+}
+
+.pc-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--warning);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  margin-bottom: 4px;
+}
+
+.pc-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-1);
+}
+
+.preview-items {
+  margin-bottom: 20px;
+}
+
+.preview-item-header {
+  display: flex;
+  gap: 12px;
+  padding: 10px 12px;
+  background: var(--surface-hi);
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-3);
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  margin-bottom: 8px;
+}
+
+.preview-item {
+  display: flex;
+  gap: 12px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  align-items: center;
+}
+
+.pi-num {
+  width: 40px;
+  font-size: 12px;
+  color: var(--text-3);
+  text-align: center;
+}
+
+.pi-name {
+  flex: 1;
+  font-size: 13px;
+  color: var(--text-1);
+}
+
+.pi-qty {
+  width: 80px;
+  font-size: 13px;
+  color: var(--text-2);
+  text-align: right;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+.preview-totals {
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+}
+
+.preview-total-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 12px;
+  font-size: 13px;
+}
+
+.preview-total-row.sub {
+  font-size: 12px;
+  color: var(--text-3);
+}
+
+.pt-label {
+  color: var(--text-3);
+  font-weight: 500;
+}
+
+.preview-total-row.sub .pt-label {
+  padding-left: 20px;
+}
+
+.pt-value {
+  color: var(--text-1);
+  font-weight: 600;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+.preview-grand {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px;
+  margin-top: 8px;
+  background: var(--warning-lo);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(251,191,36,.2);
+}
+
+.pg-label {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--warning);
+}
+
+.pg-value {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-1);
+  font-family: 'IBM Plex Mono', monospace;
+}
 </style>
 </head>
 <body>
@@ -1041,6 +1320,7 @@ button.main.success:hover {
         <h4>สินค้า</h4>
       </div>
       <div id="outStock" style="margin-bottom:18px;"></div>
+      <div class="section-header">
         <h4>รายการในบิล</h4>
         <span class="count-badge" id="outCount">0</span>
       </div>
@@ -1105,6 +1385,84 @@ button.main.success:hover {
       <div id="billList"></div>
     </section>
 
+    <!-- ════════ PREVIEW PDF PAGE ════════ -->
+    <section id="page-preview" class="page" style="padding-top:10px;">
+      
+      <button class="back-btn" onclick="cancelPreview()">
+        <i class="fas fa-arrow-left"></i> ย้อนกลับ
+      </button>
+
+      <div class="preview-card">
+        <div id="previewContent"></div>
+      </div>
+
+      <div class="btn-row">
+        <button class="main secondary" onclick="cancelPreview()">
+          <i class="fas fa-times"></i> ยกเลิก
+        </button>
+        <button class="main" onclick="editBeforePrint()" style="background:linear-gradient(135deg,var(--warning),#fcd34d);color:#78350f;">
+          <i class="fas fa-edit"></i> แก้ไขบิล
+        </button>
+      </div>
+      
+      <button class="main success" onclick="printPDF()" style="margin-top:8px;">
+        <i class="fas fa-print"></i> พิมพ์ PDF
+      </button>
+    </section>
+
+    <!-- ════════ EDIT BILL PAGE ════════ -->
+    <section id="page-edit" class="page" style="padding-top:10px;">
+      
+      <button class="back-btn" onclick="cancelEdit()">
+        <i class="fas fa-arrow-left"></i> ย้อนกลับ
+      </button>
+
+      <div class="card">
+        <div class="section-header"><h4>แก้ไขข้อมูลบิล</h4></div>
+        <input id="editBillName" placeholder="ชื่อลูกค้า">
+        <div class="input-row">
+          <input id="editBillDate" type="date">
+          <input id="editBillPrice" type="number" placeholder="ราคา บาท" oninput="renderEdit()">
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="section-header"><h4>วิธีจ่าย</h4></div>
+        <div class="pay-type-row">
+          <button data-type="pending" class="active-pay" onclick="setEditPayType('pending')">📋 วางบิล</button>
+          <button data-type="deposit" onclick="setEditPayType('deposit')">💰 มัดจำ</button>
+          <button data-type="paid" onclick="setEditPayType('paid')">✅ จ่ายเลย</button>
+        </div>
+        <div id="editDepositDetail" style="display:none;">
+          <div class="deposit-row">
+            <span class="dep-label">มัดจำ</span>
+            <input type="number" id="editDepositAmt" placeholder="0" oninput="renderEdit()">
+            <span class="dep-remaining" id="editDepRemaining">คงเหลือ 0</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <h4>สินค้าในบิล</h4>
+        <span class="count-badge" id="editItemCount">0</span>
+      </div>
+      <div id="editItemsList"></div>
+
+      <div class="section-header" style="margin-top:20px;">
+        <h4>เพิ่มสินค้า</h4>
+      </div>
+      <div id="editAddStock"></div>
+
+      <div class="btn-row" style="margin-top:20px;">
+        <button class="main secondary" onclick="cancelEdit()">
+          <i class="fas fa-times"></i> ยกเลิก
+        </button>
+        <button class="main" onclick="saveEdit()">
+          <i class="fas fa-save"></i> บันทึก
+        </button>
+      </div>
+    </section>
+
   </div>
 </div>
 
@@ -1115,6 +1473,11 @@ let bills = JSON.parse(localStorage.getItem('bills')) || [];
 let outItems = [];
 let currentPayType = 'pending'; // pending | deposit | paid
 let billFilter = 'all';         // all | pending | deposit | paid
+
+// Edit mode state
+let editingBillIndex = null;
+let editPayType = 'pending';
+let editItems = [];
 
 document.getElementById('billDate').value = new Date().toISOString().split('T')[0];
 
@@ -1130,7 +1493,9 @@ function showPage(p) {
   document.querySelectorAll('.topbar button').forEach(x => x.classList.remove('active'));
   const map = { stock: 0, out: 1, recall: 2, bill: 3 };
   document.getElementById('page-' + p).classList.add('active');
-  document.querySelectorAll('.topbar button')[map[p]].classList.add('active');
+  if (map[p] !== undefined) {
+    document.querySelectorAll('.topbar button')[map[p]].classList.add('active');
+  }
 }
 
 // ─── Pay Type ───
@@ -1160,7 +1525,7 @@ function addStock() {
   const existing = items.find(i => i.name === n);
   if (existing) {
     existing.qty += q;
-    if (cat) existing.category = cat; // อัปเデต หมวด ถ้าใส่ใหม่
+    if (cat) existing.category = cat;
   } else {
     items.push({ name: n, qty: q, category: cat || '' });
   }
@@ -1182,7 +1547,7 @@ function addOutByQty(i) {
   const input = document.getElementById('outQty_' + i);
   let qty = Number(input.value) || 1;
   if (qty <= 0) qty = 1;
-  if (qty > items[i].qty) qty = items[i].qty; // จำกัดไม่เกิน stock
+  if (qty > items[i].qty) qty = items[i].qty;
   if (items[i].qty <= 0) return;
 
   items[i].qty -= qty;
@@ -1211,10 +1576,10 @@ function confirmBill() {
     billName: document.getElementById('billName').value || 'ไม่ระบุ',
     date: document.getElementById('billDate').value,
     price: price,
-    payType: currentPayType,          // pending | deposit | paid
-    deposit: deposit,                 // จำนวนมัดจำ (มีค่า เพียง payType=deposit)
+    payType: currentPayType,
+    deposit: deposit,
     remaining: (currentPayType === 'deposit') ? Math.max(price - deposit, 0) : (currentPayType === 'paid' ? 0 : price),
-    status: currentPayType === 'paid' ? 'paid' : 'pending', // paid → จบเลย, อื่น → pending
+    status: currentPayType === 'paid' ? 'paid' : 'pending',
     items: JSON.parse(JSON.stringify(outItems))
   });
 
@@ -1228,7 +1593,6 @@ function confirmBill() {
 
 // ─── Bill Actions ───
 function markPaid(i) {
-  // คืนของเช่าเข้า stock
   bills[i].items.forEach(b => {
     const it = items.find(x => x.name === b.name);
     if (it) it.qty += b.qty;
@@ -1262,7 +1626,7 @@ function autoCleanup() {
 
 // ─── ลบบิลจ่ายแล้วรายบิล ───
 function deletePaidBill(i) {
-  bills.splice(i, 1); // ของเtrick่ คืนไปแล้วตอน markPaid แล้ว ไม่ต้องคืนซ้ำ
+  bills.splice(i, 1);
   save(); render();
 }
 
@@ -1276,7 +1640,7 @@ function clearAllPaid() {
 }
 
 // ─── เรียกคืน ───
-const OVERDUE_DAYS = 7; // เกิน กี่วัน ให้เตือน
+const OVERDUE_DAYS = 7;
 
 function getDaysSince(dateStr) {
   const d = new Date(dateStr);
@@ -1284,21 +1648,17 @@ function getDaysSince(dateStr) {
   return Math.floor((now - d) / (1000 * 60 * 60 * 24));
 }
 
-// คืนรายชิ้น: คืน 1 ชิ้นของ itemName ใน บิล index i
 function returnItem(billIdx, itemName) {
   const bill = bills[billIdx];
   const item = bill.items.find(x => x.name === itemName);
   if (!item || item.qty <= 0) return;
 
-  // คืนเข้า stock
   const stock = items.find(x => x.name === itemName);
   if (stock) stock.qty++;
 
   item.qty--;
-  // ถ้า item นั้นเหลือ 0 ให้ filter ออก
   bill.items = bill.items.filter(x => x.qty > 0);
 
-  // ถ้าไม่มี items เหลือ = คืนทั้งหมด → markPaid
   if (bill.items.length === 0) {
     bill.status = 'paid';
     bill.remaining = 0;
@@ -1309,15 +1669,12 @@ function returnItem(billIdx, itemName) {
 }
 
 function renderRecall() {
-  // เก็บ pending bills เท่านั้น
   const pending = bills
     .map((b, i) => ({ ...b, idx: i }))
     .filter(b => b.status === 'pending');
 
-  // หา overdue
   const overdue = pending.filter(b => getDaysSince(b.date) > OVERDUE_DAYS);
 
-  // ── overdue banner ──
   const banner = document.getElementById('overdueWarning');
   if (overdue.length > 0) {
     banner.style.display = 'block';
@@ -1327,7 +1684,6 @@ function renderRecall() {
     banner.style.display = 'none';
   }
 
-  // ── recall badge on tab ──
   const badge = document.getElementById('recallBadge');
   if (overdue.length > 0) {
     badge.style.display = 'inline-block';
@@ -1336,7 +1692,6 @@ function renderRecall() {
     badge.style.display = 'none';
   }
 
-  // ── render cards ──
   document.getElementById('recallList').innerHTML = pending.length
     ? pending.map((b, ri) => {
         const days = getDaysSince(b.date);
@@ -1369,10 +1724,228 @@ function renderRecall() {
       }).join('')
     : `<div class="empty-state"><div class="empty-icon">✅</div>ไม่มีของที่รอคืน</div>`;
 }
+
 function getBadgeHTML(bill) {
   if (bill.status === 'paid') return `<span class="badge paid">✓ จ่ายแล้ว</span>`;
   if (bill.payType === 'deposit') return `<span class="badge deposit">💰 มัดจำ</span>`;
   return `<span class="badge invoiced">📋 วางบิล</span>`;
+}
+
+// ─── EDIT BILL FUNCTIONS ───
+function startEdit(billIdx) {
+  const bill = bills[billIdx];
+  if (bill.status === 'paid') {
+    alert('ไม่สามารถแก้ไขบิลที่จ่ายแล้ว');
+    return;
+  }
+
+  editingBillIndex = billIdx;
+  editPayType = bill.payType;
+  editItems = JSON.parse(JSON.stringify(bill.items));
+
+  document.getElementById('editBillName').value = bill.billName;
+  document.getElementById('editBillDate').value = bill.date;
+  document.getElementById('editBillPrice').value = bill.price;
+  document.getElementById('editDepositAmt').value = bill.deposit || '';
+
+  setEditPayType(editPayType);
+  renderEdit();
+  showPage('edit');
+}
+
+function setEditPayType(type) {
+  editPayType = type;
+  document.querySelectorAll('#page-edit .pay-type-row button').forEach(b => b.classList.remove('active-pay'));
+  document.querySelector(`#page-edit .pay-type-row button[data-type="${type}"]`).classList.add('active-pay');
+  document.getElementById('editDepositDetail').style.display = (type === 'deposit') ? 'block' : 'none';
+  if (type !== 'deposit') document.getElementById('editDepositAmt').value = '';
+  renderEdit();
+}
+
+function editItemQtyChange(itemName, delta) {
+  const item = editItems.find(x => x.name === itemName);
+  if (!item) return;
+  
+  const stock = items.find(x => x.name === itemName);
+  
+  if (delta > 0) {
+    // เพิ่ม - ต้องมี stock พอ
+    if (stock && stock.qty > 0) {
+      item.qty++;
+      stock.qty--;
+    }
+  } else {
+    // ลด - คืนเข้า stock
+    if (item.qty > 0) {
+      item.qty--;
+      if (stock) stock.qty++;
+    }
+  }
+  
+  editItems = editItems.filter(x => x.qty > 0);
+  save();
+  renderEdit();
+}
+
+function removeEditItem(itemName) {
+  const item = editItems.find(x => x.name === itemName);
+  if (!item) return;
+  
+  const stock = items.find(x => x.name === itemName);
+  if (stock) stock.qty += item.qty;
+  
+  editItems = editItems.filter(x => x.name !== itemName);
+  save();
+  renderEdit();
+}
+
+function addEditItemByQty(stockIdx) {
+  const input = document.getElementById('editAddQty_' + stockIdx);
+  let qty = Number(input.value) || 1;
+  if (qty <= 0) qty = 1;
+  if (qty > items[stockIdx].qty) qty = items[stockIdx].qty;
+  if (items[stockIdx].qty <= 0) return;
+
+  items[stockIdx].qty -= qty;
+  const existing = editItems.find(x => x.name === items[stockIdx].name);
+  existing ? existing.qty += qty : editItems.push({ name: items[stockIdx].name, qty: qty });
+
+  input.value = '';
+  save();
+  renderEdit();
+}
+
+function saveEdit() {
+  if (!editItems.length) {
+    alert('ต้องมีสินค้าในบิลอย่างน้อย 1 รายการ');
+    return;
+  }
+
+  const price = Number(document.getElementById('editBillPrice').value) || 0;
+  const deposit = (editPayType === 'deposit') ? (Number(document.getElementById('editDepositAmt').value) || 0) : 0;
+
+  bills[editingBillIndex] = {
+    ...bills[editingBillIndex],
+    billName: document.getElementById('editBillName').value || 'ไม่ระบุ',
+    date: document.getElementById('editBillDate').value,
+    price: price,
+    payType: editPayType,
+    deposit: deposit,
+    remaining: (editPayType === 'deposit') ? Math.max(price - deposit, 0) : (editPayType === 'paid' ? 0 : price),
+    status: editPayType === 'paid' ? 'paid' : 'pending',
+    items: JSON.parse(JSON.stringify(editItems))
+  };
+
+  save();
+  cancelEdit();
+  render();
+  showPage('bill');
+}
+
+function cancelEdit() {
+  // คืนสินค้าที่เอาออกมาแก้ไขกลับเข้า stock (ถ้ามี)
+  const originalBill = bills[editingBillIndex];
+  if (originalBill) {
+    // คำนวณความต่าง
+    originalBill.items.forEach(orig => {
+      const current = editItems.find(x => x.name === orig.name);
+      const diff = orig.qty - (current ? current.qty : 0);
+      if (diff > 0) {
+        const stock = items.find(x => x.name === orig.name);
+        if (stock) stock.qty += diff;
+      } else if (diff < 0) {
+        const stock = items.find(x => x.name === orig.name);
+        if (stock) stock.qty += diff; // diff เป็นลบอยู่แล้ว
+      }
+    });
+    
+    // สินค้าใหม่ที่เพิ่มเข้ามา
+    editItems.forEach(edit => {
+      const inOrig = originalBill.items.find(x => x.name === edit.name);
+      if (!inOrig) {
+        const stock = items.find(x => x.name === edit.name);
+        if (stock) stock.qty += edit.qty;
+      }
+    });
+  }
+
+  editingBillIndex = null;
+  editItems = [];
+  editPayType = 'pending';
+  save();
+  render();
+  showPage('bill');
+}
+
+function renderEdit() {
+  if (editingBillIndex === null) return;
+
+  // Items in bill
+  const itemCount = editItems.reduce((s, i) => s + i.qty, 0);
+  document.getElementById('editItemCount').textContent = itemCount;
+  
+  document.getElementById('editItemsList').innerHTML = editItems.length
+    ? editItems.map((item, idx) => `
+        <div class="edit-item" style="animation-delay:${idx*.04}s">
+          <div class="item-left">
+            <div class="item-icon">✏️</div>
+            <div>
+              <div class="item-name">${item.name}</div>
+            </div>
+          </div>
+          <div class="edit-controls">
+            <button onclick="editItemQtyChange('${item.name}', -1)">−</button>
+            <span class="qty-val">${item.qty}</span>
+            <button onclick="editItemQtyChange('${item.name}', 1)">+</button>
+            <button class="remove-edit-item" onclick="removeEditItem('${item.name}')">🗑</button>
+          </div>
+        </div>`).join('')
+    : `<div class="empty-state"><div class="empty-icon">📦</div>ยังไม่มีสินค้าในบิล</div>`;
+
+  // Available stock to add
+  const grouped = {};
+  items.forEach((it, i) => {
+    const key = it.category || '';
+    if (!grouped[key]) grouped[key] = [];
+    grouped[key].push({ ...it, idx: i });
+  });
+  const cats = [...new Set(items.map(i => i.category).filter(Boolean))].sort();
+  const sortedKeys = cats.concat(grouped[''] ? [''] : []);
+
+  let stockHTML = '';
+  sortedKeys.forEach(key => {
+    const group = grouped[key];
+    if (!group) return;
+    const label = key || 'ไม่มีหมวด';
+    stockHTML += `
+      <div class="cat-section-title">
+        <span class="cat-label">${label}</span>
+        <span class="cat-line"></span>
+        <span class="cat-count">${group.length} รายการ</span>
+      </div>`;
+    stockHTML += group.map((it, ri) => `
+      <div class="stock-item" style="animation-delay:${ri*.04}s">
+        <div class="item-left">
+          <div class="item-icon" style="background:var(--success-lo);color:var(--success);">📌</div>
+          <div>
+            <div class="item-name">${it.name}</div>
+            <div class="item-qty">${it.qty} ชิ้นคงเหลือ</div>
+          </div>
+        </div>
+        <div class="out-qty-wrap">
+          <input type="number" min="1" max="${it.qty}" placeholder="จำนวน" class="out-qty-input" id="editAddQty_${it.idx}" onkeydown="if(event.key==='Enter') addEditItemByQty(${it.idx})">
+          <button class="add-out-btn" onclick="addEditItemByQty(${it.idx})">เพิ่ม</button>
+        </div>
+      </div>`).join('');
+  });
+
+  document.getElementById('editAddStock').innerHTML = stockHTML || `<div class="empty-state"><div class="empty-icon">📦</div>ไม่มีสินค้าเหลือ</div>`;
+
+  // Deposit remaining
+  const totalPrice = Number(document.getElementById('editBillPrice').value) || 0;
+  const depAmt = Number(document.getElementById('editDepositAmt').value) || 0;
+  const rem = Math.max(totalPrice - depAmt, 0);
+  document.getElementById('editDepRemaining').textContent = 'คงเหลือ ' + rem.toLocaleString();
 }
 
 // ─── Render ───
@@ -1380,11 +1953,9 @@ function render() {
   // ── Stock list (grouped by category) ──
   document.getElementById('stockCount').textContent = items.length + ' รายการ';
 
-  // populate datalist for autocomplete
   const cats = [...new Set(items.map(i => i.category).filter(Boolean))].sort();
   document.getElementById('catList').innerHTML = cats.map(c => `<option value="${c}">`).join('');
 
-  // group
   const grouped = {};
   items.forEach((it, i) => {
     const key = it.category || '';
@@ -1392,7 +1963,6 @@ function render() {
     grouped[key].push({ ...it, idx: i });
   });
 
-  // เรียง: หมวดที่มีชื่อ sort A-Z ก่อน, หมวดว่าง ("") อยู่ท้าย
   const sortedKeys = cats.concat(grouped[''] ? [''] : []);
 
   let stockHTML = '';
@@ -1499,7 +2069,7 @@ function render() {
   document.getElementById('fc-deposit').textContent = cDeposit;
   document.getElementById('fc-paid').textContent    = cPaid;
 
-  // ── show/hide ลบทั้งหมด row ── (เฉพาะ filter = paid)
+  // ── show/hide ลบทั้งหมด row ──
   const paidCount = bills.filter(b => b.status === 'paid').length;
   const showClear = (billFilter === 'paid' && paidCount > 0);
   document.getElementById('clearPaidRow').style.display = showClear ? 'block' : 'none';
@@ -1536,6 +2106,9 @@ function render() {
           ${b.status === 'pending' ? `
             <div class="bill-actions">
               <button class="main secondary" onclick="generatePDF(${b.idx})"><i class="fas fa-file-pdf"></i> ออกบิล</button>
+              <button class="main" onclick="startEdit(${b.idx})" style="background:linear-gradient(135deg,var(--warning),#fcd34d);color:#78350f;"><i class="fas fa-edit"></i> แก้ไข</button>
+            </div>
+            <div class="bill-actions" style="margin-top:8px;">
               <button class="main success" onclick="markPaid(${b.idx})"><i class="fas fa-check"></i> จ่ายแล้ว</button>
               <button class="main danger"  onclick="clearBill(${b.idx})"><i class="fas fa-trash"></i> ลบ</button>
             </div>` : `
@@ -1546,16 +2119,24 @@ function render() {
         </div>`).join('')
     : `<div class="empty-state"><div class="empty-icon">📋</div>ไม่มีบิลในประเภทนี้</div>`;
 
-  // sync recall badge + page
   renderRecall();
 }
 
+// ─── Preview & Edit before PDF ───
+let previewBillIndex = null;
 
-// ─── Generate PDF via print ───
 function generatePDF(i) {
-  const b = bills[i];
+  previewBillIndex = i;
+  renderPreview();
+  showPage('preview');
+}
+
+function printPDF() {
+  if (previewBillIndex === null) return;
+  
+  const b = bills[previewBillIndex];
   const dateClean = (b.date || '').replace(/-/g, '');
-  const billNo = 'QT' + dateClean + String(i + 1).padStart(4, '0');
+  const billNo = 'QT' + dateClean + String(previewBillIndex + 1).padStart(4, '0');
   const subtotal = b.price;
   const grandTotal = b.payType === 'deposit' ? b.remaining : subtotal;
 
@@ -1652,10 +2233,97 @@ function generatePDF(i) {
 
   const w = window.open('', '_blank');
   w.document.write(html);
-  w.document.close;
+  w.document.close();
   setTimeout(() => w.print(), 600);
 }
 
+function editBeforePrint() {
+  if (previewBillIndex === null) return;
+  startEdit(previewBillIndex);
+  previewBillIndex = null;
+}
+
+function cancelPreview() {
+  previewBillIndex = null;
+  showPage('bill');
+}
+
+function renderPreview() {
+  if (previewBillIndex === null) return;
+  
+  const b = bills[previewBillIndex];
+  const dateClean = (b.date || '').replace(/-/g, '');
+  const billNo = 'QT' + dateClean + String(previewBillIndex + 1).padStart(4, '0');
+  const subtotal = b.price;
+  const grandTotal = b.payType === 'deposit' ? b.remaining : subtotal;
+
+  let itemsHTML = '';
+  b.items.forEach((it, idx) => {
+    itemsHTML += `
+      <div class="preview-item">
+        <span class="pi-num">${idx + 1}</span>
+        <span class="pi-name">${it.name}</span>
+        <span class="pi-qty">${it.qty} Q</span>
+      </div>`;
+  });
+
+  let totalsHTML = `
+    <div class="preview-total-row">
+      <span class="pt-label">รวมเป็นเงิน</span>
+      <span class="pt-value">${subtotal.toLocaleString()} บาท</span>
+    </div>`;
+  
+  if (b.payType === 'deposit') {
+    totalsHTML += `
+      <div class="preview-total-row sub">
+        <span class="pt-label">มัดจำ</span>
+        <span class="pt-value">${b.deposit.toLocaleString()} บาท</span>
+      </div>
+      <div class="preview-total-row sub">
+        <span class="pt-label">คงเหลือ</span>
+        <span class="pt-value">${b.remaining.toLocaleString()} บาท</span>
+      </div>`;
+  }
+
+  document.getElementById('previewContent').innerHTML = `
+    <div class="preview-header">
+      <div class="ph-left">
+        <div class="ph-logo">Big<br><span style="font-size:26px;">Ball</span></div>
+        <div class="ph-company">บริษัท BIGBALL จำกัด</div>
+      </div>
+      <div class="ph-right">
+        <div class="ph-title">ใบเสนอราคา</div>
+        <div class="ph-info">
+          <div class="phi-row"><span>เลขที่:</span> <strong>${billNo}</strong></div>
+          <div class="phi-row"><span>วันที่:</span> <strong>${b.date || '-'}</strong></div>
+          <div class="phi-row"><span>เครดิต:</span> <strong>30 วัน</strong></div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="preview-customer">
+      <div class="pc-label">ลูกค้า</div>
+      <div class="pc-name">${b.billName}</div>
+    </div>
+
+    <div class="preview-items">
+      <div class="preview-item-header">
+        <span style="width:40px;">#</span>
+        <span style="flex:1;">รายละเอียด</span>
+        <span style="width:80px;text-align:right;">จำนวน</span>
+      </div>
+      ${itemsHTML}
+    </div>
+
+    <div class="preview-totals">
+      ${totalsHTML}
+      <div class="preview-grand">
+        <span class="pg-label">จำนวนเงินรวมทั้งสิ้น</span>
+        <span class="pg-value">${grandTotal.toLocaleString()} บาท</span>
+      </div>
+    </div>
+  `;
+}
 
 autoCleanup();
 render();
