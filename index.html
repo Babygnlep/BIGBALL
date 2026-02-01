@@ -200,31 +200,6 @@ input:focus {
 
 input[type="date"] { color-scheme: dark; }
 
-.color-select {
-  width: 100%;
-  padding: 10px 14px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
-  background: var(--surface-hi);
-  color: var(--text-1);
-  font-family: 'Kanit', sans-serif;
-  font-size: 13px;
-  font-weight: 400;
-  transition: border-color .2s, box-shadow .2s;
-  outline: none;
-  cursor: pointer;
-}
-
-.color-select:focus {
-  border-color: rgba(99,102,241,.5);
-  box-shadow: 0 0 0 3px rgba(99,102,241,.12);
-}
-
-.color-select option {
-  background: var(--surface);
-  color: var(--text-1);
-}
-
 /* ─── Buttons ─── */
 button.main {
   display: flex;
@@ -1206,7 +1181,7 @@ button.main.success:hover {
 }
 
 .pi-qty {
-  width: 60px;
+  width: 70px;
   font-size: 13px;
   color: var(--text-2);
   text-align: right;
@@ -1214,26 +1189,9 @@ button.main.success:hover {
 }
 
 .pi-queue {
-  width: 50px;
+  width: 60px;
   font-size: 13px;
   color: var(--text-2);
-  text-align: right;
-  font-family: 'IBM Plex Mono', monospace;
-}
-
-.pi-price {
-  width: 60px;
-  font-size: 12px;
-  color: var(--text-3);
-  text-align: right;
-  font-family: 'IBM Plex Mono', monospace;
-}
-
-.pi-total {
-  width: 70px;
-  font-size: 13px;
-  color: var(--success);
-  font-weight: 600;
   text-align: right;
   font-family: 'IBM Plex Mono', monospace;
 }
@@ -1326,8 +1284,6 @@ button.main.success:hover {
         </div>
         <input id="newItemCat" placeholder="หมวดหมู่ (ไม่บังคับ)" list="catList">
         <datalist id="catList"></datalist>
-        <input id="newItemPrice" type="number" placeholder="ราคาเช่า (บาท)" min="0">
-        <input id="newItemColors" placeholder="สีที่มี (คั่นด้วย , เช่น แดง, เขียว, น้ำเงิน)">
         <button class="main" onclick="addStock()">
           <i class="fas fa-plus"></i> เพิ่มสินค้า
         </button>
@@ -1531,9 +1487,6 @@ let editingBillIndex = null;
 let editPayType = 'pending';
 let editItems = [];
 
-// Preview mode state
-let previewBillIndex = null;
-
 document.getElementById('billDate').value = new Date().toISOString().split('T')[0];
 
 // ─── Persistence ───
@@ -1576,37 +1529,17 @@ function addStock() {
   const n = document.getElementById('newItemName').value.trim();
   const q = Number(document.getElementById('newItemQty').value);
   const cat = document.getElementById('newItemCat').value.trim();
-  const price = Number(document.getElementById('newItemPrice').value) || 0;
-  const colors = document.getElementById('newItemColors').value.trim();
-  
   if (!n || q <= 0) return;
-  
   const existing = items.find(i => i.name === n);
   if (existing) {
     existing.qty += q;
     if (cat) existing.category = cat;
-    if (price > 0) existing.price = price;
-    if (colors) {
-      const colorList = colors.split(',').map(c => c.trim()).filter(Boolean);
-      existing.colors = [...new Set([...(existing.colors || []), ...colorList])];
-    }
   } else {
-    const colorList = colors ? colors.split(',').map(c => c.trim()).filter(Boolean) : [];
-    items.push({ 
-      name: n, 
-      qty: q, 
-      category: cat || '',
-      price: price,
-      colors: colorList,
-      colorInventory: {} // track which colors are out: {color: qty}
-    });
+    items.push({ name: n, qty: q, category: cat || '' });
   }
-  
   document.getElementById('newItemName').value = '';
   document.getElementById('newItemQty').value = '';
   document.getElementById('newItemCat').value = '';
-  document.getElementById('newItemPrice').value = '';
-  document.getElementById('newItemColors').value = '';
   save(); render();
 }
 
@@ -1621,48 +1554,21 @@ function deleteItem(i) {
 function addOutByQty(i) {
   const qtyInput = document.getElementById('outQty_' + i);
   const queueInput = document.getElementById('outQueue_' + i);
-  const colorSelect = document.getElementById('outColor_' + i);
   
   let qty = Number(qtyInput.value) || 1;
   let queue = Number(queueInput.value) || 1;
-  const selectedColor = colorSelect ? colorSelect.value : '';
   
   if (qty <= 0) qty = 1;
   if (queue <= 0) queue = 1;
   if (qty > items[i].qty) qty = items[i].qty;
   if (items[i].qty <= 0) return;
-  
-  // ถ้ามีสีให้เลือกแต่ไม่ได้เลือก
-  if (items[i].colors && items[i].colors.length > 0 && !selectedColor) {
-    alert('กรุณาเลือกสี');
-    return;
-  }
 
   items[i].qty -= qty;
-  
-  // สร้าง key ที่มีสี (ถ้ามี)
-  const itemKey = selectedColor ? `${items[i].name}|${selectedColor}` : items[i].name;
-  const displayName = selectedColor ? `${items[i].name} (${selectedColor})` : items[i].name;
-  
-  const b = outItems.find(x => x.key === itemKey);
-  if (b) {
-    b.qty += qty;
-    b.queue += queue;
-  } else {
-    outItems.push({ 
-      key: itemKey,
-      name: items[i].name,
-      displayName: displayName,
-      qty: qty,
-      queue: queue,
-      color: selectedColor,
-      price: items[i].price || 0
-    });
-  }
+  const b = outItems.find(x => x.name === items[i].name);
+  b ? (b.qty += qty, b.queue += queue) : outItems.push({ name: items[i].name, qty: qty, queue: queue });
 
   qtyInput.value = '';
   queueInput.value = '';
-  if (colorSelect) colorSelect.value = '';
   save(); render();
 }
 
@@ -1671,7 +1577,7 @@ function removeOut(i) {
   const it = items.find(x => x.name === b.name);
   if (it) it.qty++;
   b.qty--;
-  if (b.qty > 0 && b.queue > 0) b.queue--;
+  if (b.qty > 0 && b.queue > 0) b.queue--; // ลด queue ตาม
   if (b.qty <= 0) outItems.splice(i, 1);
   save(); render();
 }
@@ -2098,8 +2004,8 @@ function render() {
         <div class="item-left">
           <div class="item-icon">📦</div>
           <div>
-            <div class="item-name">${it.name} ${it.price ? '<span style="color:var(--success);font-weight:600;margin-left:6px;">฿' + it.price.toLocaleString() + '</span>' : ''}</div>
-            <div class="item-qty">คงเหลือ ${it.qty} ชิ้น${it.colors && it.colors.length ? ' • สี: ' + it.colors.join(', ') : ''}</div>
+            <div class="item-name">${it.name}</div>
+            <div class="item-qty">คงเหลือ ${it.qty} ชิ้น</div>
           </div>
         </div>
         <div class="controls">
@@ -2134,55 +2040,36 @@ function render() {
         <span class="cat-line"></span>
         <span class="cat-count">${group.length} รายการ</span>
       </div>`;
-    outStockHTML += group.map((it, ri) => {
-      const hasColors = it.colors && it.colors.length > 0;
-      return `
-      <div class="stock-item" style="animation-delay:${ri*.04}s;${hasColors ? 'flex-wrap:wrap;' : ''}">
+    outStockHTML += group.map((it, ri) => `
+      <div class="stock-item" style="animation-delay:${ri*.04}s">
         <div class="item-left">
           <div class="item-icon" style="background:var(--accent-lo);color:var(--accent);">📌</div>
           <div>
-            <div class="item-name">${it.name} ${it.price ? '<span style="color:var(--success);font-weight:600;margin-left:4px;">฿' + it.price.toLocaleString() + '</span>' : ''}</div>
-            <div class="item-qty">${it.qty} ชิ้นคงเหลือ${hasColors ? ' • มีสี: ' + it.colors.join(', ') : ''}</div>
+            <div class="item-name">${it.name}</div>
+            <div class="item-qty">${it.qty} ชิ้นคงเหลือ</div>
           </div>
         </div>
         <div class="out-qty-wrap">
           <input type="number" min="1" max="${it.qty}" placeholder="ชิ้น" class="out-qty-input" id="outQty_${it.idx}" onkeydown="if(event.key==='Enter') document.getElementById('outQueue_${it.idx}').focus()">
-          <input type="number" min="1" placeholder="คิว" class="out-qty-input" id="outQueue_${it.idx}" onkeydown="if(event.key==='Enter') ${hasColors ? "document.getElementById('outColor_" + it.idx + "').focus()" : 'addOutByQty(' + it.idx + ')'}">
+          <input type="number" min="1" placeholder="คิว" class="out-qty-input" id="outQueue_${it.idx}" onkeydown="if(event.key==='Enter') addOutByQty(${it.idx})">
           <button class="add-out-btn" onclick="addOutByQty(${it.idx})">เพิ่ม</button>
         </div>
-        ${hasColors ? `
-        <div style="width:100%;margin-top:8px;">
-          <select class="color-select" id="outColor_${it.idx}">
-            <option value="">เลือกสี</option>
-            ${it.colors.map(c => `<option value="${c}">${c}</option>`).join('')}
-          </select>
-        </div>` : ''}
-      </div>`;
-    }).join('');
+      </div>`).join('');
   });
 
   document.getElementById('outStock').innerHTML = outStockHTML || `<div class="empty-state"><div class="empty-icon">📦</div>ยังไม่มีสินค้า</div>`;
 
   // ── Out — bill items ──
   const outTotal = outItems.reduce((s, o) => s + o.qty, 0);
-  const calculatedPrice = outItems.reduce((sum, o) => sum + (o.price * o.queue), 0);
-  
   document.getElementById('outCount').textContent = outTotal;
-  
-  // Auto-fill price if not set
-  const priceInput = document.getElementById('billPrice');
-  if (!priceInput.value || priceInput.value === '0') {
-    priceInput.value = calculatedPrice;
-  }
-  
   document.getElementById('outBill').innerHTML = outItems.length
     ? outItems.map((b, i) => `
         <div class="stock-item" style="animation-delay:${i*.04}s">
           <div class="item-left">
             <div class="item-icon" style="background:var(--success-lo);color:var(--success);">✓</div>
             <div>
-              <div class="item-name">${b.displayName}${b.price > 0 ? ' <span style="color:var(--success);font-size:11px;">฿' + b.price.toLocaleString() + '/คิว</span>' : ''}</div>
-              <div class="item-qty">${b.qty} ชิ้น • ${b.queue} คิว${b.price > 0 ? ' = ฿' + (b.price * b.queue).toLocaleString() : ''}</div>
+              <div class="item-name">${b.name}</div>
+              <div class="item-qty">${b.qty} ชิ้น • ${b.queue} คิว</div>
             </div>
           </div>
           <button class="remove-out-btn" onclick="removeOut(${i})">−</button>
@@ -2231,7 +2118,7 @@ function render() {
             ${getBadgeHTML(b)}
           </div>
           <div class="bill-items-list">
-            ${b.items.map(it => `<span class="tag">${it.displayName || it.name} ${it.qty}ชิ้น•${it.queue}คิว</span>`).join('')}
+            ${b.items.map(it => `<span class="tag">${it.name} ${it.qty}ชิ้น•${it.queue}คิว</span>`).join('')}
           </div>
           <div class="bill-price">
             ${b.price.toLocaleString()} <span>บาท</span>
@@ -2279,28 +2166,25 @@ function printPDF() {
 
   let rowsHTML = '';
   b.items.forEach((it, idx) => {
-    const itemPrice = it.price || 0;
-    const lineTotal = itemPrice * it.queue;
     rowsHTML += '<tr style="' + (idx % 2 === 1 ? 'background:#f9fafb;' : '') + '">'
       + '<td style="text-align:center;">' + (idx + 1) + '</td>'
-      + '<td>' + (it.displayName || it.name) + '</td>'
+      + '<td>' + it.name + '</td>'
       + '<td style="text-align:right;">' + it.qty + ' ชิ้น</td>'
       + '<td style="text-align:right;">' + it.queue + ' คิว</td>'
-      + '<td style="text-align:right;">' + (itemPrice > 0 ? '฿' + itemPrice.toLocaleString() : '-') + '</td>'
-      + '<td style="text-align:right;">' + (lineTotal > 0 ? '฿' + lineTotal.toLocaleString() : '-') + '</td>'
+      + '<td style="text-align:right;">-</td>'
       + '</tr>';
   });
 
   let totalsHTML = '<tr>'
-    + '<td colspan="4"></td>'
+    + '<td colspan="3"></td>'
     + '<td style="text-align:right;color:#6b7280;font-weight:600;padding-top:10px;">รวมเป็นเงิน</td>'
     + '<td style="text-align:right;padding-top:10px;">' + subtotal.toLocaleString() + ' บาท</td>'
     + '</tr>';
   if (b.payType === 'deposit') {
-    totalsHTML += '<tr><td colspan="4"></td>'
+    totalsHTML += '<tr><td colspan="3"></td>'
       + '<td style="text-align:right;color:#6b7280;font-weight:600;">มัดจำ</td>'
       + '<td style="text-align:right;">' + b.deposit.toLocaleString() + ' บาท</td></tr>'
-      + '<tr><td colspan="4"></td>'
+      + '<tr><td colspan="3"></td>'
       + '<td style="text-align:right;color:#6b7280;font-weight:600;">คงเหลือ</td>'
       + '<td style="text-align:right;">' + b.remaining.toLocaleString() + ' บาท</td></tr>';
   }
@@ -2356,17 +2240,16 @@ function printPDF() {
     + '<table><thead><tr>'
     + '<th style="width:40px;">#</th>'
     + '<th>รายละเอียด</th>'
-    + '<th style="width:65px;">จำนวน</th>'
-    + '<th style="width:50px;">คิว</th>'
-    + '<th style="width:65px;">ราคา/คิว</th>'
-    + '<th style="width:70px;">ยอดรวม</th>'
+    + '<th style="width:70px;">จำนวน</th>'
+    + '<th style="width:60px;">คิว</th>'
+    + '<th style="width:80px;">ยอดรวม</th>'
     + '</tr></thead><tbody>'
     + rowsHTML
     + totalsHTML
     + '</tbody></table>'
     + '<hr class="total-sep">'
     + '<table><tr class="grand-row">'
-    + '<td colspan="4"></td>'
+    + '<td colspan="3"></td>'
     + '<td style="text-align:right;">จำนวนเงินรวมทั้งสิ้น</td>'
     + '<td style="text-align:right;">' + grandTotal.toLocaleString() + ' บาท</td>'
     + '</tr></table>'
@@ -2400,16 +2283,12 @@ function renderPreview() {
 
   let itemsHTML = '';
   b.items.forEach((it, idx) => {
-    const itemPrice = it.price || 0;
-    const lineTotal = itemPrice * it.queue;
     itemsHTML += `
       <div class="preview-item">
         <span class="pi-num">${idx + 1}</span>
-        <span class="pi-name">${it.displayName || it.name}</span>
+        <span class="pi-name">${it.name}</span>
         <span class="pi-qty">${it.qty} ชิ้น</span>
         <span class="pi-queue">${it.queue} คิว</span>
-        <span class="pi-price">${itemPrice > 0 ? '฿' + itemPrice.toLocaleString() : '-'}</span>
-        <span class="pi-total">${lineTotal > 0 ? '฿' + lineTotal.toLocaleString() : '-'}</span>
       </div>`;
   });
 
@@ -2456,10 +2335,8 @@ function renderPreview() {
       <div class="preview-item-header">
         <span style="width:40px;">#</span>
         <span style="flex:1;">รายละเอียด</span>
-        <span style="width:60px;text-align:right;">จำนวน</span>
-        <span style="width:50px;text-align:right;">คิว</span>
-        <span style="width:60px;text-align:right;">ราคา/คิว</span>
-        <span style="width:70px;text-align:right;">รวม</span>
+        <span style="width:70px;text-align:right;">จำนวน</span>
+        <span style="width:60px;text-align:right;">คิว</span>
       </div>
       ${itemsHTML}
     </div>
