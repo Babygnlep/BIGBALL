@@ -339,21 +339,58 @@ button.main.success:hover {
   font-family: 'IBM Plex Mono', monospace;
 }
 
-/* ─── Out page add button ─── */
+/* ─── Out page qty input + button ─── */
+.out-qty-wrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.out-qty-input {
+  width: 52px;
+  height: 34px;
+  padding: 0 8px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface-hi);
+  color: var(--text-1);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  outline: none;
+  transition: border-color .2s, box-shadow .2s;
+  margin-bottom: 0;
+}
+.out-qty-input:focus {
+  border-color: rgba(99,102,241,.5);
+  box-shadow: 0 0 0 3px rgba(99,102,241,.12);
+}
+.out-qty-input::placeholder { color: var(--text-3); font-size: 11px; font-family: 'Kanit'; }
+
+/* hide default number input arrows */
+.out-qty-input::-webkit-outer-spin-button,
+.out-qty-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.out-qty-input[type=number] { -moz-appearance: textfield; }
+
 .add-out-btn {
-  width: 34px; height: 34px;
-  border-radius: 9px;
+  height: 34px;
+  padding: 0 12px;
+  border-radius: 8px;
   border: none;
   background: linear-gradient(135deg, var(--primary), #818cf8);
   color: #fff;
-  font-size: 18px;
+  font-family: 'Kanit', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   transition: transform .15s, box-shadow .2s;
   box-shadow: 0 3px 12px rgba(99,102,241,.35);
+  white-space: nowrap;
 }
 .add-out-btn:hover {
-  transform: scale(1.08);
+  transform: scale(1.05);
   box-shadow: 0 4px 16px rgba(99,102,241,.45);
 }
 
@@ -529,6 +566,59 @@ button.main.success:hover {
 }
 
 .auto-del-notice .ad-text strong { color: var(--text-2); font-weight: 600; }
+
+.controls button.del-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-3);
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .15s;
+  margin-left: 4px;
+}
+
+.controls button.del-btn:hover {
+  border-color: rgba(248,113,113,.4);
+  background: var(--danger-lo);
+  color: var(--danger);
+}
+
+/* ─── Stock Category Section Title ─── */
+.cat-section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+.cat-section-title:first-child { margin-top: 0; }
+
+.cat-section-title .cat-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-2);
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  white-space: nowrap;
+}
+
+.cat-section-title .cat-line {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.cat-section-title .cat-count {
+  font-size: 11px;
+  color: var(--text-3);
+  white-space: nowrap;
+}
 
 /* ─── Overdue Warning Banner ─── */
 .overdue-banner {
@@ -905,6 +995,8 @@ button.main.success:hover {
           <input id="newItemName" placeholder="ชื่อสินค้า">
           <input id="newItemQty" type="number" placeholder="จำนวน" min="1">
         </div>
+        <input id="newItemCat" placeholder="หมวดหมู่ (ไม่บังคับ)" list="catList">
+        <datalist id="catList"></datalist>
         <button class="main" onclick="addStock()">
           <i class="fas fa-plus"></i> เพิ่มสินค้า
         </button>
@@ -1063,21 +1155,41 @@ function setBillFilter(f) {
 function addStock() {
   const n = document.getElementById('newItemName').value.trim();
   const q = Number(document.getElementById('newItemQty').value);
+  const cat = document.getElementById('newItemCat').value.trim();
   if (!n || q <= 0) return;
   const existing = items.find(i => i.name === n);
-  if (existing) { existing.qty += q; }
-  else { items.push({ name: n, qty: q }); }
+  if (existing) {
+    existing.qty += q;
+    if (cat) existing.category = cat; // อัปเデต หมวด ถ้าใส่ใหม่
+  } else {
+    items.push({ name: n, qty: q, category: cat || '' });
+  }
   document.getElementById('newItemName').value = '';
   document.getElementById('newItemQty').value = '';
+  document.getElementById('newItemCat').value = '';
+  save(); render();
+}
+
+// ─── ลบสินค้า ───
+function deleteItem(i) {
+  if (!confirm(`ลบ "${items[i].name}" ออก?`)) return;
+  items.splice(i, 1);
   save(); render();
 }
 
 // ─── Out ───
-function addOut(i) {
+function addOutByQty(i) {
+  const input = document.getElementById('outQty_' + i);
+  let qty = Number(input.value) || 1;
+  if (qty <= 0) qty = 1;
+  if (qty > items[i].qty) qty = items[i].qty; // จำกัดไม่เกิน stock
   if (items[i].qty <= 0) return;
-  items[i].qty--;
+
+  items[i].qty -= qty;
   const b = outItems.find(x => x.name === items[i].name);
-  b ? b.qty++ : outItems.push({ name: items[i].name, qty: 1 });
+  b ? b.qty += qty : outItems.push({ name: items[i].name, qty: qty });
+
+  input.value = '';
   save(); render();
 }
 
@@ -1265,38 +1377,93 @@ function getBadgeHTML(bill) {
 
 // ─── Render ───
 function render() {
-  // ── Stock list ──
+  // ── Stock list (grouped by category) ──
   document.getElementById('stockCount').textContent = items.length + ' รายการ';
-  document.getElementById('stockList').innerHTML = items.length
-    ? items.map((it, i) => `
-        <div class="stock-item" style="animation-delay:${i*.04}s">
-          <div class="item-left">
-            <div class="item-icon">📦</div>
-            <div>
-              <div class="item-name">${it.name}</div>
-              <div class="item-qty">คงเหลือ ${it.qty} ชิ้น</div>
-            </div>
-          </div>
-          <div class="controls">
-            <button onclick="items[${i}].qty--; save(); render();" title="ลด">−</button>
-            <span class="qty-val">${it.qty}</span>
-            <button onclick="items[${i}].qty++; save(); render();" title="เพิ่ม">+</button>
-          </div>
-        </div>`).join('')
-    : `<div class="empty-state"><div class="empty-icon">📦</div>ยังไม่มีสินค้า</div>`;
 
-  // ── Out — stock selector ──
-  document.getElementById('outStock').innerHTML = items.map((it, i) => `
-    <div class="stock-item" style="animation-delay:${i*.04}s">
-      <div class="item-left">
-        <div class="item-icon" style="background:var(--accent-lo);color:var(--accent);">📌</div>
-        <div>
-          <div class="item-name">${it.name}</div>
-          <div class="item-qty">${it.qty} ชิ้นคงเหลือ</div>
+  // populate datalist for autocomplete
+  const cats = [...new Set(items.map(i => i.category).filter(Boolean))].sort();
+  document.getElementById('catList').innerHTML = cats.map(c => `<option value="${c}">`).join('');
+
+  // group
+  const grouped = {};
+  items.forEach((it, i) => {
+    const key = it.category || '';
+    if (!grouped[key]) grouped[key] = [];
+    grouped[key].push({ ...it, idx: i });
+  });
+
+  // เรียง: หมวดที่มีชื่อ sort A-Z ก่อน, หมวดว่าง ("") อยู่ท้าย
+  const sortedKeys = cats.concat(grouped[''] ? [''] : []);
+
+  let stockHTML = '';
+  sortedKeys.forEach(key => {
+    const group = grouped[key];
+    if (!group) return;
+    const label = key || 'ไม่มีหมวด';
+    stockHTML += `
+      <div class="cat-section-title">
+        <span class="cat-label">${label}</span>
+        <span class="cat-line"></span>
+        <span class="cat-count">${group.length} รายการ</span>
+      </div>`;
+    stockHTML += group.map((it, ri) => `
+      <div class="stock-item" style="animation-delay:${ri*.04}s">
+        <div class="item-left">
+          <div class="item-icon">📦</div>
+          <div>
+            <div class="item-name">${it.name}</div>
+            <div class="item-qty">คงเหลือ ${it.qty} ชิ้น</div>
+          </div>
         </div>
-      </div>
-      <button class="add-out-btn" onclick="addOut(${i})">+</button>
-    </div>`).join('') || `<div class="empty-state"><div class="empty-icon">📦</div>ยังไม่มีสินค้า</div>`;
+        <div class="controls">
+          <button onclick="items[${it.idx}].qty--; save(); render();" title="ลด">−</button>
+          <span class="qty-val">${it.qty}</span>
+          <button onclick="items[${it.idx}].qty++; save(); render();" title="เพิ่ม">+</button>
+          <button class="del-btn" onclick="deleteItem(${it.idx})" title="ลบสินค้า">🗑</button>
+        </div>
+      </div>`).join('');
+  });
+
+  document.getElementById('stockList').innerHTML = stockHTML || `<div class="empty-state"><div class="empty-icon">📦</div>ยังไม่มีสินค้า</div>`;
+
+  // ── Out — stock selector (grouped by category) ──
+  const outGrouped = {};
+  items.forEach((it, i) => {
+    const key = it.category || '';
+    if (!outGrouped[key]) outGrouped[key] = [];
+    outGrouped[key].push({ ...it, idx: i });
+  });
+  const outCats = [...new Set(items.map(i => i.category).filter(Boolean))].sort();
+  const outSortedKeys = outCats.concat(outGrouped[''] ? [''] : []);
+
+  let outStockHTML = '';
+  outSortedKeys.forEach(key => {
+    const group = outGrouped[key];
+    if (!group) return;
+    const label = key || 'ไม่มีหมวด';
+    outStockHTML += `
+      <div class="cat-section-title">
+        <span class="cat-label">${label}</span>
+        <span class="cat-line"></span>
+        <span class="cat-count">${group.length} รายการ</span>
+      </div>`;
+    outStockHTML += group.map((it, ri) => `
+      <div class="stock-item" style="animation-delay:${ri*.04}s">
+        <div class="item-left">
+          <div class="item-icon" style="background:var(--accent-lo);color:var(--accent);">📌</div>
+          <div>
+            <div class="item-name">${it.name}</div>
+            <div class="item-qty">${it.qty} ชิ้นคงเหลือ</div>
+          </div>
+        </div>
+        <div class="out-qty-wrap">
+          <input type="number" min="1" max="${it.qty}" placeholder="จำนวน" class="out-qty-input" id="outQty_${it.idx}" onkeydown="if(event.key==='Enter') addOutByQty(${it.idx})">
+          <button class="add-out-btn" onclick="addOutByQty(${it.idx})">เพิ่ม</button>
+        </div>
+      </div>`).join('');
+  });
+
+  document.getElementById('outStock').innerHTML = outStockHTML || `<div class="empty-state"><div class="empty-icon">📦</div>ยังไม่มีสินค้า</div>`;
 
   // ── Out — bill items ──
   const outTotal = outItems.reduce((s, o) => s + o.qty, 0);
