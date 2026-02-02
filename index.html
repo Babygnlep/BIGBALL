@@ -420,45 +420,6 @@ function editBeforePrint(){if(previewBillIndex===null)return;startEdit(previewBi
 function cancelPreview(){previewBillIndex=null;showPage('bill');}
 function renderPreview(){if(previewBillIndex===null)return;const b=bills[previewBillIndex];const dC=(b.date||'').replace(/-/g,'');const bNo='QT'+dC+String(previewBillIndex+1).padStart(4,'0');const st=b.price;const gT=b.payType==='deposit'?b.remaining:st;let iH='';b.items.forEach((it,idx)=>{iH+=`<div class="preview-item"><span class="pi-num">${idx+1}</span><span class="pi-name">${it.name}</span><span class="pi-qty">${it.qty} ชิ้น</span><span class="pi-queue">${it.queue} คิว</span></div>`;});let tH=`<div class="preview-total-row"><span class="pt-label">รวมเป็นเงิน</span><span class="pt-value">${st.toLocaleString()} บาท</span></div>`;if(b.payType==='deposit'){tH+=`<div class="preview-total-row sub"><span class="pt-label">มัดจำ</span><span class="pt-value">${b.deposit.toLocaleString()} บาท</span></div><div class="preview-total-row sub"><span class="pt-label">คงเหลือ</span><span class="pt-value">${b.remaining.toLocaleString()} บาท</span></div>`;}document.getElementById('previewContent').innerHTML=`<div class="preview-header"><div class="ph-left"><div class="ph-logo">Big<br><span style="font-size:26px;">Ball</span></div><div class="ph-company">บริษัท BIGBALL จำกัด</div></div><div class="ph-right"><div class="ph-title">ใบเสนอราคา</div><div class="ph-info"><div class="phi-row"><span>เลขที่:</span> <strong>${bNo}</strong></div><div class="phi-row"><span>วันที่:</span> <strong>${b.date||'-'}</strong></div><div class="phi-row"><span>เครดิต:</span> <strong>30 วัน</strong></div></div></div></div><div class="preview-customer"><div class="pc-label">ลูกค้า</div><div class="pc-name">${b.billName}</div></div><div class="preview-items"><div class="preview-item-header"><span style="width:40px;">#</span><span style="flex:1;">รายละเอียด</span><span style="width:70px;text-align:right;">จำนวน</span><span style="width:60px;text-align:right;">คิว</span></div>${iH}</div><div class="preview-totals">${tH}<div class="preview-grand"><span class="pg-label">จำนวนเงินรวมทั้งสิ้น</span><span class="pg-value">${gT.toLocaleString()} บาท</span></div></div>`;}
 autoCleanup();render();renderRecall();
-  // เพิ่มตัวแปรนี้ที่ด้านบน
-const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxnzgcqSRjBdeylsns26GhCqaexPwjEg7ujj7UE1xvKXU3S3zlB0hLrAK0pCqNBpsY8/exec';
-
-// เพิ่มฟังก์ชันซิงค์
-async function syncToGoogleSheets() {
-  if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes('ใส่')) {
-    alert('กรุณาตั้งค่า GOOGLE_SCRIPT_URL ก่อน');
-    return;
-  }
-  
-  try {
-    // ซิงค์สินค้า
-    await fetch(GOOGLE_SCRIPT_URL, {
-      method: 'POST',
-      body: JSON.stringify({
-        action: 'sync_items',
-        items: items
-      })
-    });
-    
-    // ซิงค์บิล
-    await fetch(GOOGLE_SCRIPT_URL, {
-      method: 'POST',
-      body: JSON.stringify({
-        action: 'sync_bills',
-        bills: bills
-      })
-    });
-    
-    alert('✅ ซิงค์ข้อมูลสำเร็จ!');
-  } catch (error) {
-    alert('❌ เกิดข้อผิดพลาด: ' + error.message);
-  }
-}
-
-// เพิ่มปุ่มซิงค์ใน HTML (ใส่ในแท็บที่ต้องการ)
-<button class="main" onclick="syncToGoogleSheets()">
-  <i class="fas fa-sync"></i> ซิงค์ไป Google Sheets
-</button>
 </script>
 </body>
 </html>
