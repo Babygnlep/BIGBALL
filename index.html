@@ -4,1335 +4,269 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>BIGBALL</title>
-
 <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
-  <button id="load">โหลดบิล</button>
-<div id="list"></div>
-
-</script>
-
-
 <style>
-/* ─── Reset & Root ─── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
 :root {
-  --primary:    #6366f1;
-  --primary-lo: rgba(99,102,241,.18);
-  --accent:     #06b6d4;
-  --accent-lo:  rgba(6,182,212,.15);
-  --success:    #34d399;
-  --success-lo: rgba(52,211,153,.15);
-  --warning:    #fbbf24;
-  --warning-lo: rgba(251,191,36,.15);
-  --danger:     #f87171;
-  --danger-lo:  rgba(248,113,113,.15);
-
-  --bg:         #0c1121;
-  --surface:    #131d33;
-  --surface-hi: #1a2744;
-  --border:     rgba(148,163,184,.10);
-  --border-hi:  rgba(148,163,184,.22);
-
-  --text-1:     #f1f5f9;
-  --text-2:     #94a3b8;
-  --text-3:     #475569;
-
-  --radius:     16px;
-  --radius-sm:  10px;
-  --radius-lg:  22px;
-}
-
-/* ─── Body & Background ─── */
-body {
-  font-family: 'Kanit', sans-serif;
-  background: var(--bg);
-  color: var(--text-1);
-  min-height: 100vh;
-  overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
-}
-  <!-- 🔥 ใส่ Firebase ตรงนี้ -->
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getFirestore, collection, getDocs }
-      from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "YOUR_API_KEY",
-      authDomain: "bigball-bb8ce.firebaseapp.com",
-      projectId: "bigball-bb8ce",
-      storageBucket: "bigball-bb8ce.appspot.com",
-      messagingSenderId: "1000043704368",
-      appId: "1:1000043704368:web:4e104ffe62ddefc250fdf5"
-}
-
-    const app = initializeApp(firebaseConfig);
-    const db = getFirestore(app);
-
-    document.getElementById("load").onclick = async () => {
-      const snap = await getDocs(collection(db, "bills"));
-      list.innerHTML = "";
-      snap.forEach(doc => {
-        const d = doc.data();
-        list.innerHTML += `<p>${d.title} : ${d.total}</p>`;
-      });
-    };
-  </script>
-
-
-/* Ambient glow blobs */
-body::before, body::after {
-  content: '';
-  position: fixed;
-  border-radius: 50%;
-  filter: blur(100px);
-  opacity: .18;
-  pointer-events: none;
-  z-index: 0;
-}
-body::before {
-  width: 380px; height: 380px;
-  background: var(--primary);
-  top: -120px; left: -100px;
-}
-body::after {
-  width: 320px; height: 320px;
-  background: var(--accent);
-  bottom: -80px; right: -60px;
-}
-
-/* ─── Top Bar ─── */
-.topbar {
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  display: flex;
-  gap: 6px;
-  padding: 10px 12px;
-  background: rgba(19,29,51,.82);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border-bottom: 1px solid var(--border);
-}
-
-.topbar button {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 7px;
-  padding: 11px 6px;
-  border: 1px solid transparent;
-  border-radius: var(--radius-sm);
-  background: transparent;
-  color: var(--text-3);
-  font-family: 'Kanit', sans-serif;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all .25s cubic-bezier(.4,0,.2,1);
-}
-
-.topbar button:hover {
-  color: var(--text-2);
-  background: var(--surface-hi);
-}
-
-.topbar button.active {
-  color: var(--text-1);
-  background: var(--primary-lo);
-  border-color: rgba(99,102,241,.35);
-  box-shadow: 0 0 14px rgba(99,102,241,.12);
-}
-
-.topbar button .tab-icon { font-size: 15px; }
-
-/* ─── Layout ─── */
-.container {
-  position: relative;
-  z-index: 1;
-  max-width: 480px;
-  margin: 24px auto 40px;
-  padding: 0 18px;
-}
-
-.page { display: none; animation: fadeUp .3s ease; }
-.page.active { display: block; }
-
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(10px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-/* ─── Section Header ─── */
-.section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 12px;
-  padding: 0 2px;
-}
-
-.section-header h4 {
-  font-size: 13px;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: .08em;
-  color: var(--text-3);
-}
-
-.section-header .count-badge {
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--primary);
-  background: var(--primary-lo);
-  padding: 3px 9px;
-  border-radius: 20px;
-}
-
-/* ─── Card ─── */
-.card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 20px;
-  margin-bottom: 16px;
-  transition: border-color .2s;
-}
-.card:hover { border-color: var(--border-hi); }
-
-/* ─── Inputs ─── */
-.input-row { display: flex; gap: 8px; }
-.input-row input { flex: 1; }
-.input-row input:last-child { flex: .45; }
-
-input {
-  display: block;
-  width: 100%;
-  padding: 12px 16px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
-  background: var(--surface-hi);
-  color: var(--text-1);
-  font-family: 'Kanit', sans-serif;
-  font-size: 14px;
-  font-weight: 400;
-  margin-bottom: 10px;
-  transition: border-color .2s, box-shadow .2s;
-  outline: none;
-}
-
-input::placeholder { color: var(--text-3); }
-
-input:focus {
-  border-color: rgba(99,102,241,.5);
-  box-shadow: 0 0 0 3px rgba(99,102,241,.12);
-}
-
-input[type="date"] { color-scheme: dark; }
-
-/* ─── Buttons ─── */
-button.main {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  width: 100%;
-  padding: 13px;
-  border-radius: var(--radius);
-  border: none;
-  background: linear-gradient(135deg, var(--primary), #818cf8);
-  color: #fff;
-  font-family: 'Kanit', sans-serif;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: transform .15s, box-shadow .2s, opacity .2s;
-  box-shadow: 0 4px 18px rgba(99,102,241,.3);
-  margin-top: 4px;
-}
-
-button.main:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 24px rgba(99,102,241,.4);
-}
-
-button.main:active { transform: translateY(0); }
-
-button.main.secondary {
-  background: var(--surface-hi);
-  box-shadow: none;
-  color: var(--text-2);
-  font-weight: 500;
-}
-button.main.secondary:hover {
-  background: var(--border-hi);
-  box-shadow: none;
-  color: var(--text-1);
-}
-
-button.main.danger {
-  background: linear-gradient(135deg, var(--danger), #fb7185);
-  box-shadow: 0 4px 18px rgba(248,113,113,.25);
-}
-button.main.danger:hover {
-  box-shadow: 0 6px 24px rgba(248,113,113,.35);
-}
-
-button.main.success {
-  background: linear-gradient(135deg, var(--success), #6ee7b7);
-  box-shadow: 0 4px 18px rgba(52,211,153,.25);
-  color: #064e3b;
-}
-button.main.success:hover {
-  box-shadow: 0 6px 24px rgba(52,211,153,.35);
-}
-
-/* ─── Stock Item Row ─── */
-.stock-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: var(--surface-hi);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 11px 14px;
-  margin-bottom: 8px;
-  transition: border-color .2s;
-  animation: slideIn .22s ease both;
-}
-.stock-item:hover { border-color: var(--border-hi); }
-
-@keyframes slideIn {
-  from { opacity: 0; transform: translateX(-8px); }
-  to   { opacity: 1; transform: translateX(0); }
-}
-
-.stock-item .item-left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.stock-item .item-icon {
-  width: 34px; height: 34px;
-  border-radius: 9px;
-  background: var(--primary-lo);
-  color: var(--primary);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 15px;
-}
-
-.stock-item .item-name {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text-1);
-}
-
-.stock-item .item-qty {
-  font-size: 12px;
-  color: var(--text-3);
-  margin-top: 1px;
-}
-
-/* ─── Qty Controls ─── */
-.controls {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.controls button {
-  width: 32px; height: 32px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  font-size: 17px;
-  line-height: 1;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  transition: all .15s;
-  background: var(--surface);
-  color: var(--text-2);
-}
-
-.controls button:hover {
-  border-color: var(--primary);
-  color: var(--primary);
-  background: var(--primary-lo);
-}
-
-.controls .qty-val {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-1);
-  min-width: 22px;
-  text-align: center;
-  font-family: 'IBM Plex Mono', monospace;
-}
-
-/* ─── Out page qty input + button ─── */
-.out-qty-wrap {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.out-qty-input {
-  width: 52px;
-  height: 34px;
-  padding: 0 8px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: var(--surface-hi);
-  color: var(--text-1);
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 14px;
-  font-weight: 600;
-  text-align: center;
-  outline: none;
-  transition: border-color .2s, box-shadow .2s;
-  margin-bottom: 0;
-}
-.out-qty-input:focus {
-  border-color: rgba(99,102,241,.5);
-  box-shadow: 0 0 0 3px rgba(99,102,241,.12);
-}
-.out-qty-input::placeholder { color: var(--text-3); font-size: 11px; font-family: 'Kanit'; }
-
-/* hide default number input arrows */
-.out-qty-input::-webkit-outer-spin-button,
-.out-qty-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-.out-qty-input[type=number] { -moz-appearance: textfield; }
-
-.add-out-btn {
-  height: 34px;
-  padding: 0 12px;
-  border-radius: 8px;
-  border: none;
-  background: linear-gradient(135deg, var(--primary), #818cf8);
-  color: #fff;
-  font-family: 'Kanit', sans-serif;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  transition: transform .15s, box-shadow .2s;
-  box-shadow: 0 3px 12px rgba(99,102,241,.35);
-  white-space: nowrap;
-}
-.add-out-btn:hover {
-  transform: scale(1.05);
-  box-shadow: 0 4px 16px rgba(99,102,241,.45);
-}
-
-.remove-out-btn {
-  width: 30px; height: 30px;
-  border-radius: 8px;
-  border: 1px solid var(--danger-lo);
-  background: var(--danger-lo);
-  color: var(--danger);
-  font-size: 16px;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  transition: background .15s;
-}
-.remove-out-btn:hover { background: rgba(248,113,113,.28); }
-
-/* ─── Bill Cards ─── */
-.bill-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 18px 20px;
-  margin-bottom: 14px;
-  transition: border-color .2s;
-  animation: slideIn .22s ease both;
-}
-.bill-card:hover { border-color: var(--border-hi); }
-
-.bill-card .bill-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  margin-bottom: 10px;
-}
-
-.bill-card .bill-name {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--text-1);
-}
-
-.bill-card .bill-meta {
-  font-size: 12px;
-  color: var(--text-3);
-  margin-top: 3px;
-}
-
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  padding: 5px 11px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-weight: 600;
-  letter-spacing: .03em;
-}
-
-.badge.pending { background: var(--warning-lo); color: var(--warning); }
-.badge.paid    { background: var(--success-lo); color: var(--success); }
-
-.bill-price {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--text-1);
-  font-family: 'IBM Plex Mono', monospace;
-  margin-bottom: 12px;
-}
-.bill-price span { font-size: 13px; color: var(--text-3); font-weight: 400; font-family: 'Kanit'; }
-
-.bill-actions { display: flex; gap: 8px; }
-.bill-actions button { flex: 1; }
-
-/* ─── Bill Items List (small) ─── */
-.bill-items-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 14px;
-}
-
-.bill-items-list .tag {
-  font-size: 11px;
-  font-weight: 500;
-  color: var(--text-2);
-  background: var(--surface-hi);
-  padding: 4px 10px;
-  border-radius: 6px;
-  border: 1px solid var(--border);
-}
-
-/* ─── Empty State ─── */
-.empty-state {
-  text-align: center;
-  color: var(--text-3);
-  padding: 32px 0;
-  font-size: 14px;
-}
-.empty-state .empty-icon {
-  font-size: 28px;
-  margin-bottom: 8px;
-  opacity: .5;
-}
-
-/* ─── Clear Paid Row ─── */
-.clear-paid-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: var(--danger-lo);
-  border: 1px solid rgba(248,113,113,.2);
-  border-radius: var(--radius);
-  padding: 10px 14px;
-  margin-bottom: 20px;
-  animation: fadeUp .25s ease;
-}
-
-.clear-paid-row .clear-label {
-  font-size: 13px;
-  color: var(--danger);
-  font-weight: 500;
-}
-
-.clear-paid-row .clear-label span {
-  color: var(--text-3);
-  font-size: 11px;
-  font-weight: 400;
-  display: block;
-  margin-top: 2px;
-}
-
-.clear-paid-row button {
-  padding: 7px 14px;
-  border-radius: 9px;
-  border: 1px solid rgba(248,113,113,.35);
-  background: rgba(248,113,113,.12);
-  color: var(--danger);
-  font-family: 'Kanit', sans-serif;
-  font-size: 13px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background .18s, border-color .18s;
-  white-space: nowrap;
-  display: flex;
-  align-items: center;
-  gap: 5px;
-}
-
-.clear-paid-row button:hover {
-  background: rgba(248,113,113,.22);
-  border-color: rgba(248,113,113,.5);
-}
-
-/* auto-delete notice */
-.auto-del-notice {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 12px;
-  border-radius: var(--radius-sm);
-  background: var(--surface-hi);
-  border: 1px solid var(--border);
-  margin-bottom: 18px;
-  animation: fadeUp .25s ease;
-}
-
-.auto-del-notice .ad-icon { font-size: 14px; opacity:.6; }
-
-.auto-del-notice .ad-text {
-  font-size: 11.5px;
-  color: var(--text-3);
-  line-height: 1.45;
-}
-
-.auto-del-notice .ad-text strong { color: var(--text-2); font-weight: 600; }
-
-.controls button.del-btn {
-  width: 30px;
-  height: 30px;
-  border-radius: 7px;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--text-3);
-  font-size: 13px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all .15s;
-  margin-left: 4px;
-}
-
-.controls button.del-btn:hover {
-  border-color: rgba(248,113,113,.4);
-  background: var(--danger-lo);
-  color: var(--danger);
-}
-
-/* ─── Stock Category Section Title ─── */
-.cat-section-title {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 20px;
-  margin-bottom: 10px;
-}
-.cat-section-title:first-child { margin-top: 0; }
-
-.cat-section-title .cat-label {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--text-2);
-  text-transform: uppercase;
-  letter-spacing: .06em;
-  white-space: nowrap;
-}
-
-.cat-section-title .cat-line {
-  flex: 1;
-  height: 1px;
-  background: var(--border);
-}
-
-.cat-section-title .cat-count {
-  font-size: 11px;
-  color: var(--text-3);
-  white-space: nowrap;
-}
-
-/* ─── Overdue Warning Banner ─── */
-.overdue-banner {
-  display: flex;
-  align-items: center;
-  background: linear-gradient(135deg, rgba(248,113,113,.15), rgba(251,191,36,.1));
-  border: 1px solid rgba(248,113,113,.25);
-  border-radius: var(--radius);
-  padding: 14px 16px;
-  margin-bottom: 20px;
-  animation: fadeUp .25s ease;
-}
-
-.overdue-banner-left {
-  display: flex;
-  align-items: flex-start;
-  gap: 12px;
-}
-
-.overdue-icon { font-size: 22px; line-height: 1.2; }
-
-.overdue-title {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--danger);
-}
-
-.overdue-sub {
-  font-size: 12px;
-  color: var(--text-3);
-  margin-top: 2px;
-}
-
-/* ─── Recall Card ─── */
-.recall-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 16px 18px;
-  margin-bottom: 14px;
-  transition: border-color .2s;
-  animation: slideIn .22s ease both;
-}
-.recall-card:hover { border-color: var(--border-hi); }
-.recall-card.overdue-card { border-color: rgba(248,113,113,.3); }
-
-.recall-card .recall-header {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  margin-bottom: 12px;
-}
-
-.recall-card .recall-name {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--text-1);
-}
-
-.recall-card .recall-date {
-  font-size: 12px;
-  color: var(--text-3);
-  margin-top: 2px;
-}
-
-.overdue-days {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--danger);
-  background: var(--danger-lo);
-  border: 1px solid rgba(248,113,113,.2);
-  padding: 3px 9px;
-  border-radius: 14px;
-  white-space: nowrap;
-}
-
-.ok-days {
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text-3);
-  background: var(--surface-hi);
-  border: 1px solid var(--border);
-  padding: 3px 9px;
-  border-radius: 14px;
-  white-space: nowrap;
-}
-
-/* ─── Return Item Row ─── */
-.return-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: var(--surface-hi);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 9px 12px;
-  margin-bottom: 7px;
-  transition: border-color .18s;
-}
-.return-item:hover { border-color: var(--border-hi); }
-
-.return-item .ri-left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.return-item .ri-icon {
-  width: 30px; height: 30px;
-  border-radius: 8px;
-  background: var(--accent-lo);
-  color: var(--accent);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 14px;
-}
-
-.return-item .ri-name { font-size: 13px; font-weight: 500; color: var(--text-1); }
-.return-item .ri-qty { font-size: 11px; color: var(--text-3); margin-top: 1px; }
-
-.return-item .ri-controls {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.return-item .ri-controls button {
-  width: 28px; height: 28px;
-  border-radius: 7px;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  color: var(--text-2);
-  font-size: 15px;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  transition: all .15s;
-  font-family: 'Kanit';
-}
-
-.return-item .ri-controls button:hover {
-  border-color: var(--success);
-  color: var(--success);
-  background: var(--success-lo);
-}
-
-.return-item .ri-controls .ri-val {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-1);
-  min-width: 18px;
-  text-align: center;
-  font-family: 'IBM Plex Mono', monospace;
-}
-
-.return-item .ri-controls button.ri-done {
-  width: auto;
-  padding: 5px 10px;
-  border-radius: 7px;
-  border-color: rgba(52,211,153,.3);
-  background: var(--success-lo);
-  color: var(--success);
-  font-size: 11px;
-  font-weight: 600;
-  gap: 3px;
-}
-.return-item .ri-controls button.ri-done:hover {
-  background: rgba(52,211,153,.25);
-  border-color: rgba(52,211,153,.5);
-  color: var(--success);
-}
-
-/* ─── Bill Filter Tabs ─── */
-.filter-row {
-  display: flex;
-  gap: 6px;
-  margin-bottom: 22px;
-  flex-wrap: wrap;
-}
-
-.filter-row button {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
-  border-radius: 24px;
-  border: 1px solid var(--border);
-  background: var(--surface-hi);
-  color: var(--text-3);
-  font-family: 'Kanit', sans-serif;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all .2s cubic-bezier(.4,0,.2,1);
-}
-
-.filter-row button:hover { color: var(--text-2); border-color: var(--border-hi); }
-
-.filter-row button .filter-count {
-  font-size: 11px;
-  font-weight: 600;
-  background: rgba(0,0,0,.25);
-  padding: 1px 7px;
-  border-radius: 10px;
-  min-width: 20px;
-  text-align: center;
-}
-
-/* Active states per filter */
-.filter-row button.active-filter { border-color: transparent; }
-
-.filter-row button[data-filter="all"].active-filter {
-  background: var(--primary-lo);
-  color: var(--primary);
-  border-color: rgba(99,102,241,.3);
-}
-.filter-row button[data-filter="all"].active-filter .filter-count { background: rgba(99,102,241,.3); }
-
-.filter-row button[data-filter="pending"].active-filter {
-  background: var(--accent-lo);
-  color: var(--accent);
-  border-color: rgba(6,182,212,.3);
-}
-.filter-row button[data-filter="pending"].active-filter .filter-count { background: rgba(6,182,212,.3); }
-
-.filter-row button[data-filter="deposit"].active-filter {
-  background: var(--warning-lo);
-  color: var(--warning);
-  border-color: rgba(251,191,36,.3);
-}
-.filter-row button[data-filter="deposit"].active-filter .filter-count { background: rgba(251,191,36,.3); }
-
-.filter-row button[data-filter="paid"].active-filter {
-  background: var(--success-lo);
-  color: var(--success);
-  border-color: rgba(52,211,153,.3);
-}
-.filter-row button[data-filter="paid"].active-filter .filter-count { background: rgba(52,211,153,.3); }
-
-/* ─── Payment Type Selector ─── */
-.pay-type-row {
-  display: flex;
-  gap: 6px;
-  margin-bottom: 10px;
-  background: var(--surface-hi);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 5px;
-}
-
-.pay-type-row button {
-  flex: 1;
-  padding: 9px 6px;
-  border: 1px solid transparent;
-  border-radius: 11px;
-  background: transparent;
-  color: var(--text-3);
-  font-family: 'Kanit', sans-serif;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all .2s cubic-bezier(.4,0,.2,1);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-}
-
-.pay-type-row button:hover { color: var(--text-2); }
-
-.pay-type-row button.active-pay {
-  color: var(--text-1);
-  background: var(--surface);
-  border-color: var(--border-hi);
-  box-shadow: 0 2px 8px rgba(0,0,0,.2);
-}
-
-.pay-type-row button[data-type="paid"].active-pay {
-  color: var(--success);
-  border-color: rgba(52,211,153,.3);
-  background: var(--success-lo);
-}
-
-.pay-type-row button[data-type="deposit"].active-pay {
-  color: var(--warning);
-  border-color: rgba(251,191,36,.3);
-  background: var(--warning-lo);
-}
-
-.pay-type-row button[data-type="pending"].active-pay {
-  color: var(--accent);
-  border-color: rgba(6,182,212,.3);
-  background: var(--accent-lo);
-}
-
-/* Deposit detail row */
-.deposit-row {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  background: var(--warning-lo);
-  border: 1px solid rgba(251,191,36,.2);
-  border-radius: var(--radius-sm);
-  padding: 10px 14px;
-  margin-bottom: 10px;
-  animation: fadeUp .2s ease;
-}
-
-.deposit-row .dep-label {
-  font-size: 12px;
-  color: var(--warning);
-  font-weight: 600;
-  white-space: nowrap;
-  min-width: 60px;
-}
-
-.deposit-row input {
-  margin-bottom: 0;
-  flex: 1;
-  padding: 8px 12px;
-  font-size: 14px;
-  background: var(--surface);
-  border-color: rgba(251,191,36,.25);
-}
-
-.deposit-row input:focus {
-  border-color: rgba(251,191,36,.5);
-  box-shadow: 0 0 0 3px rgba(251,191,36,.1);
-}
-
-.deposit-row .dep-remaining {
-  font-size: 12px;
-  color: var(--warning);
-  white-space: nowrap;
-  font-weight: 500;
-  min-width: 75px;
-  text-align: right;
-}
-
-/* Badge — deposit */
-.badge.deposit { background: var(--warning-lo); color: var(--warning); }
-.badge.invoiced { background: var(--accent-lo); color: var(--accent); }
-
-/* ─── Bill action row buttons small ─── */
-.btn-row { display: flex; gap: 8px; margin-top: 10px; }
-.btn-row button { flex: 1; }
-
-/* ─── Edit Item Row in Edit Page ─── */
-.edit-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: var(--surface-hi);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 11px 14px;
-  margin-bottom: 8px;
-  transition: border-color .2s;
-  animation: slideIn .22s ease both;
-}
-.edit-item:hover { border-color: var(--border-hi); }
-
-.edit-item .item-left {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.edit-item .item-icon {
-  width: 34px; height: 34px;
-  border-radius: 9px;
-  background: var(--warning-lo);
-  color: var(--warning);
-  display: flex; align-items: center; justify-content: center;
-  font-size: 15px;
-}
-
-.edit-item .item-name {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text-1);
-}
-
-.edit-controls {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.edit-controls button {
-  width: 32px; height: 32px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  font-size: 17px;
-  line-height: 1;
-  cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  transition: all .15s;
-  background: var(--surface);
-  color: var(--text-2);
-}
-
-.edit-controls button:hover {
-  border-color: var(--warning);
-  color: var(--warning);
-  background: var(--warning-lo);
-}
-
-.edit-controls .qty-val {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-1);
-  min-width: 22px;
-  text-align: center;
-  font-family: 'IBM Plex Mono', monospace;
-}
-
-.edit-controls button.remove-edit-item {
-  border-color: var(--danger-lo);
-  background: var(--danger-lo);
-  color: var(--danger);
-}
-.edit-controls button.remove-edit-item:hover {
-  background: rgba(248,113,113,.28);
-  border-color: rgba(248,113,113,.4);
-}
-
-/* Back button */
-.back-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 12px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
-  background: var(--surface-hi);
-  color: var(--text-2);
-  font-family: 'Kanit', sans-serif;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all .2s;
-  margin-bottom: 16px;
-}
-.back-btn:hover {
-  background: var(--border-hi);
-  color: var(--text-1);
-}
-
-/* ─── Preview Page Styles ─── */
-.preview-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 24px;
-  margin-bottom: 20px;
-  animation: fadeUp .3s ease;
-}
-
-.preview-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding-bottom: 20px;
-  border-bottom: 1px solid var(--border);
-  margin-bottom: 20px;
-}
-
-.ph-left { display: flex; flex-direction: column; gap: 8px; }
-
-.ph-logo {
-  font-size: 20px;
-  font-weight: 700;
-  color: var(--text-1);
-  line-height: 1.1;
-}
-
-.ph-company {
-  font-size: 11px;
-  color: var(--text-3);
-}
-
-.ph-right { text-align: right; }
-
-.ph-title {
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--warning);
-  margin-bottom: 12px;
-}
-
-.ph-info { display: flex; flex-direction: column; gap: 4px; }
-
-.phi-row {
-  font-size: 12px;
-  color: var(--text-3);
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-}
-
-.phi-row strong { color: var(--text-1); }
-
-.preview-customer {
-  margin-bottom: 20px;
-  padding-bottom: 16px;
-  border-bottom: 1px solid var(--border);
-}
-
-.pc-label {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--warning);
-  text-transform: uppercase;
-  letter-spacing: .05em;
-  margin-bottom: 4px;
-}
-
-.pc-name {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-1);
-}
-
-.preview-items {
-  margin-bottom: 20px;
-}
-
-.preview-item-header {
-  display: flex;
-  gap: 12px;
-  padding: 10px 12px;
-  background: var(--surface-hi);
-  border-radius: var(--radius-sm);
-  font-size: 11px;
-  font-weight: 600;
-  color: var(--text-3);
-  text-transform: uppercase;
-  letter-spacing: .04em;
-  margin-bottom: 8px;
-}
-
-.preview-item {
-  display: flex;
-  gap: 12px;
-  padding: 10px 12px;
-  border-bottom: 1px solid var(--border);
-  align-items: center;
-}
-
-.pi-num {
-  width: 40px;
-  font-size: 12px;
-  color: var(--text-3);
-  text-align: center;
-}
-
-.pi-name {
-  flex: 1;
-  font-size: 13px;
-  color: var(--text-1);
-}
-
-.pi-qty {
-  width: 70px;
-  font-size: 13px;
-  color: var(--text-2);
-  text-align: right;
-  font-family: 'IBM Plex Mono', monospace;
-}
-
-.pi-queue {
-  width: 60px;
-  font-size: 13px;
-  color: var(--text-2);
-  text-align: right;
-  font-family: 'IBM Plex Mono', monospace;
-}
-
-.preview-totals {
-  padding-top: 16px;
-  border-top: 1px solid var(--border);
-}
-
-.preview-total-row {
-  display: flex;
-  justify-content: space-between;
-  padding: 8px 12px;
-  font-size: 13px;
-}
-
-.preview-total-row.sub {
-  font-size: 12px;
-  color: var(--text-3);
-}
-
-.pt-label {
-  color: var(--text-3);
-  font-weight: 500;
-}
-
-.preview-total-row.sub .pt-label {
-  padding-left: 20px;
-}
-
-.pt-value {
-  color: var(--text-1);
-  font-weight: 600;
-  font-family: 'IBM Plex Mono', monospace;
-}
-
-.preview-grand {
-  display: flex;
-  justify-content: space-between;
-  padding: 12px;
-  margin-top: 8px;
-  background: var(--warning-lo);
-  border-radius: var(--radius-sm);
-  border: 1px solid rgba(251,191,36,.2);
-}
-
-.pg-label {
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--warning);
-}
-
-.pg-value {
-  font-size: 16px;
-  font-weight: 700;
-  color: var(--text-1);
-  font-family: 'IBM Plex Mono', monospace;
-}
+  --primary:#6366f1; --primary-lo:rgba(99,102,241,.18);
+  --accent:#06b6d4; --accent-lo:rgba(6,182,212,.15);
+  --success:#34d399; --success-lo:rgba(52,211,153,.15);
+  --warning:#fbbf24; --warning-lo:rgba(251,191,36,.15);
+  --danger:#f87171; --danger-lo:rgba(248,113,113,.15);
+  --bg:#0c1121; --surface:#131d33; --surface-hi:#1a2744;
+  --border:rgba(148,163,184,.10); --border-hi:rgba(148,163,184,.22);
+  --text-1:#f1f5f9; --text-2:#94a3b8; --text-3:#475569;
+  --radius:16px; --radius-sm:10px; --radius-lg:22px;
+}
+body { font-family:'Kanit',sans-serif; background:var(--bg); color:var(--text-1); min-height:100vh; overflow-x:hidden; -webkit-font-smoothing:antialiased; }
+body::before,body::after { content:''; position:fixed; border-radius:50%; filter:blur(100px); opacity:.18; pointer-events:none; z-index:0; }
+body::before { width:380px; height:380px; background:var(--primary); top:-120px; left:-100px; }
+body::after { width:320px; height:320px; background:var(--accent); bottom:-80px; right:-60px; }
+
+/* Icon Picker */
+.icon-picker { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; padding:12px; background:var(--surface-hi); border:1px solid var(--border); border-radius:var(--radius-sm); }
+.icon-opt { width:46px; height:46px; border-radius:12px; border:2px solid transparent; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:20px; transition:all .2s cubic-bezier(.4,0,.2,1); position:relative; }
+.icon-opt:hover { transform:scale(1.1); border-color:var(--border-hi); }
+.icon-opt.sel { transform:scale(1.15); box-shadow:0 0 0 3px rgba(99,102,241,.3); }
+.icon-opt.sel::after { content:'✓'; position:absolute; bottom:-2px; right:-2px; width:16px; height:16px; border-radius:50%; background:var(--primary); color:#fff; font-size:10px; font-weight:700; display:flex; align-items:center; justify-content:center; }
+.icon-opt.red { background:rgba(239,68,68,0.15); color:#ef4444; }
+.icon-opt.orange { background:rgba(249,115,22,0.15); color:#f97316; }
+.icon-opt.yellow { background:rgba(234,179,8,0.15); color:#eab308; }
+.icon-opt.green { background:rgba(34,197,94,0.15); color:#22c55e; }
+.icon-opt.blue { background:rgba(59,130,246,0.15); color:#3b82f6; }
+.icon-opt.indigo { background:rgba(99,102,241,0.15); color:#6366f1; }
+.icon-opt.purple { background:rgba(168,85,247,0.15); color:#a855f7; }
+.icon-opt.pink { background:rgba(236,72,153,0.15); color:#ec4899; }
+.icon-opt.cyan { background:rgba(6,182,212,0.15); color:#06b6d4; }
+.icon-opt.teal { background:rgba(20,184,166,0.15); color:#14b8a6; }
+.icon-opt.red.sel { border-color:rgba(239,68,68,0.5); }
+.icon-opt.orange.sel { border-color:rgba(249,115,22,0.5); }
+.icon-opt.yellow.sel { border-color:rgba(234,179,8,0.5); }
+.icon-opt.green.sel { border-color:rgba(34,197,94,0.5); }
+.icon-opt.blue.sel { border-color:rgba(59,130,246,0.5); }
+.icon-opt.indigo.sel { border-color:rgba(99,102,241,0.5); }
+.icon-opt.purple.sel { border-color:rgba(168,85,247,0.5); }
+.icon-opt.pink.sel { border-color:rgba(236,72,153,0.5); }
+.icon-opt.cyan.sel { border-color:rgba(6,182,212,0.5); }
+.icon-opt.teal.sel { border-color:rgba(20,184,166,0.5); }
+
+.topbar { position:sticky; top:0; z-index:100; display:flex; gap:6px; padding:10px 12px; background:rgba(19,29,51,.82); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); border-bottom:1px solid var(--border); }
+.topbar button { flex:1; display:flex; align-items:center; justify-content:center; gap:7px; padding:11px 6px; border:1px solid transparent; border-radius:var(--radius-sm); background:transparent; color:var(--text-3); font-family:'Kanit',sans-serif; font-size:14px; font-weight:500; cursor:pointer; transition:all .25s cubic-bezier(.4,0,.2,1); }
+.topbar button:hover { color:var(--text-2); background:var(--surface-hi); }
+.topbar button.active { color:var(--text-1); background:var(--primary-lo); border-color:rgba(99,102,241,.35); box-shadow:0 0 14px rgba(99,102,241,.12); }
+.topbar button .tab-icon { font-size:15px; }
+.container { position:relative; z-index:1; max-width:480px; margin:24px auto 40px; padding:0 18px; }
+.page { display:none; animation:fadeUp .3s ease; }
+.page.active { display:block; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+.section-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; padding:0 2px; }
+.section-header h4 { font-size:13px; font-weight:600; text-transform:uppercase; letter-spacing:.08em; color:var(--text-3); }
+.section-header .count-badge { font-size:11px; font-weight:500; color:var(--primary); background:var(--primary-lo); padding:3px 9px; border-radius:20px; }
+.card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:20px; margin-bottom:16px; transition:border-color .2s; }
+.card:hover { border-color:var(--border-hi); }
+.input-row { display:flex; gap:8px; }
+.input-row input { flex:1; }
+.input-row input:last-child { flex:.45; }
+input { display:block; width:100%; padding:12px 16px; border-radius:var(--radius-sm); border:1px solid var(--border); background:var(--surface-hi); color:var(--text-1); font-family:'Kanit',sans-serif; font-size:14px; font-weight:400; margin-bottom:10px; transition:border-color .2s,box-shadow .2s; outline:none; }
+input::placeholder { color:var(--text-3); }
+input:focus { border-color:rgba(99,102,241,.5); box-shadow:0 0 0 3px rgba(99,102,241,.12); }
+input[type="date"] { color-scheme:dark; }
+button.main { display:flex; align-items:center; justify-content:center; gap:6px; width:100%; padding:13px; border-radius:var(--radius); border:none; background:linear-gradient(135deg,var(--primary),#818cf8); color:#fff; font-family:'Kanit',sans-serif; font-size:15px; font-weight:600; cursor:pointer; transition:transform .15s,box-shadow .2s,opacity .2s; box-shadow:0 4px 18px rgba(99,102,241,.3); margin-top:4px; }
+button.main:hover { transform:translateY(-1px); box-shadow:0 6px 24px rgba(99,102,241,.4); }
+button.main:active { transform:translateY(0); }
+button.main.secondary { background:var(--surface-hi); box-shadow:none; color:var(--text-2); font-weight:500; }
+button.main.secondary:hover { background:var(--border-hi); box-shadow:none; color:var(--text-1); }
+button.main.danger { background:linear-gradient(135deg,var(--danger),#fb7185); box-shadow:0 4px 18px rgba(248,113,113,.25); }
+button.main.danger:hover { box-shadow:0 6px 24px rgba(248,113,113,.35); }
+button.main.success { background:linear-gradient(135deg,var(--success),#6ee7b7); box-shadow:0 4px 18px rgba(52,211,153,.25); color:#064e3b; }
+button.main.success:hover { box-shadow:0 6px 24px rgba(52,211,153,.35); }
+.stock-item { display:flex; align-items:center; justify-content:space-between; background:var(--surface-hi); border:1px solid var(--border); border-radius:var(--radius); padding:11px 14px; margin-bottom:8px; transition:border-color .2s; animation:slideIn .22s ease both; }
+.stock-item:hover { border-color:var(--border-hi); }
+@keyframes slideIn { from { opacity:0; transform:translateX(-8px); } to { opacity:1; transform:translateX(0); } }
+.stock-item .item-left { display:flex; align-items:center; gap:10px; }
+.stock-item .item-icon { width:34px; height:34px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:15px; }
+.stock-item .item-name { font-size:14px; font-weight:500; color:var(--text-1); }
+.stock-item .item-qty { font-size:12px; color:var(--text-3); margin-top:1px; }
+.controls { display:flex; align-items:center; gap:6px; }
+.controls button { width:32px; height:32px; border-radius:8px; border:1px solid var(--border); font-size:17px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .15s; background:var(--surface); color:var(--text-2); }
+.controls button:hover { border-color:var(--primary); color:var(--primary); background:var(--primary-lo); }
+.controls .qty-val { font-size:14px; font-weight:600; color:var(--text-1); min-width:22px; text-align:center; font-family:'IBM Plex Mono',monospace; }
+.out-qty-wrap { display:flex; align-items:center; gap:6px; }
+.out-qty-input { width:52px; height:34px; padding:0 8px; border-radius:8px; border:1px solid var(--border); background:var(--surface-hi); color:var(--text-1); font-family:'IBM Plex Mono',monospace; font-size:14px; font-weight:600; text-align:center; outline:none; transition:border-color .2s,box-shadow .2s; margin-bottom:0; }
+.out-qty-input:focus { border-color:rgba(99,102,241,.5); box-shadow:0 0 0 3px rgba(99,102,241,.12); }
+.out-qty-input::placeholder { color:var(--text-3); font-size:11px; font-family:'Kanit'; }
+.out-qty-input::-webkit-outer-spin-button,.out-qty-input::-webkit-inner-spin-button { -webkit-appearance:none; margin:0; }
+.out-qty-input[type=number] { -moz-appearance:textfield; }
+.add-out-btn { height:34px; padding:0 12px; border-radius:8px; border:none; background:linear-gradient(135deg,var(--primary),#818cf8); color:#fff; font-family:'Kanit',sans-serif; font-size:13px; font-weight:600; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:transform .15s,box-shadow .2s; box-shadow:0 3px 12px rgba(99,102,241,.35); white-space:nowrap; }
+.add-out-btn:hover { transform:scale(1.05); box-shadow:0 4px 16px rgba(99,102,241,.45); }
+.remove-out-btn { width:30px; height:30px; border-radius:8px; border:1px solid var(--danger-lo); background:var(--danger-lo); color:var(--danger); font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background .15s; }
+.remove-out-btn:hover { background:rgba(248,113,113,.28); }
+.bill-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:18px 20px; margin-bottom:14px; transition:border-color .2s; animation:slideIn .22s ease both; }
+.bill-card:hover { border-color:var(--border-hi); }
+.bill-card .bill-header { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:10px; }
+.bill-card .bill-name { font-size:15px; font-weight:600; color:var(--text-1); }
+.bill-card .bill-meta { font-size:12px; color:var(--text-3); margin-top:3px; }
+.badge { display:inline-flex; align-items:center; gap:5px; padding:5px 11px; border-radius:20px; font-size:11px; font-weight:600; letter-spacing:.03em; }
+.badge.pending { background:var(--warning-lo); color:var(--warning); }
+.badge.paid { background:var(--success-lo); color:var(--success); }
+.badge.deposit { background:var(--warning-lo); color:var(--warning); }
+.badge.invoiced { background:var(--accent-lo); color:var(--accent); }
+.bill-price { font-size:18px; font-weight:700; color:var(--text-1); font-family:'IBM Plex Mono',monospace; margin-bottom:12px; }
+.bill-price span { font-size:13px; color:var(--text-3); font-weight:400; font-family:'Kanit'; }
+.bill-actions { display:flex; gap:8px; }
+.bill-actions button { flex:1; }
+.bill-items-list { display:flex; flex-wrap:wrap; gap:6px; margin-bottom:14px; }
+.bill-items-list .tag { font-size:11px; font-weight:500; color:var(--text-2); background:var(--surface-hi); padding:4px 10px; border-radius:6px; border:1px solid var(--border); }
+.empty-state { text-align:center; color:var(--text-3); padding:32px 0; font-size:14px; }
+.empty-state .empty-icon { font-size:28px; margin-bottom:8px; opacity:.5; }
+.clear-paid-row { display:flex; align-items:center; justify-content:space-between; background:var(--danger-lo); border:1px solid rgba(248,113,113,.2); border-radius:var(--radius); padding:10px 14px; margin-bottom:20px; animation:fadeUp .25s ease; }
+.clear-paid-row .clear-label { font-size:13px; color:var(--danger); font-weight:500; }
+.clear-paid-row .clear-label span { color:var(--text-3); font-size:11px; font-weight:400; display:block; margin-top:2px; }
+.clear-paid-row button { padding:7px 14px; border-radius:9px; border:1px solid rgba(248,113,113,.35); background:rgba(248,113,113,.12); color:var(--danger); font-family:'Kanit',sans-serif; font-size:13px; font-weight:600; cursor:pointer; transition:background .18s,border-color .18s; white-space:nowrap; display:flex; align-items:center; gap:5px; }
+.clear-paid-row button:hover { background:rgba(248,113,113,.22); border-color:rgba(248,113,113,.5); }
+.auto-del-notice { display:flex; align-items:center; gap:8px; padding:8px 12px; border-radius:var(--radius-sm); background:var(--surface-hi); border:1px solid var(--border); margin-bottom:18px; animation:fadeUp .25s ease; }
+.auto-del-notice .ad-icon { font-size:14px; opacity:.6; }
+.auto-del-notice .ad-text { font-size:11.5px; color:var(--text-3); line-height:1.45; }
+.auto-del-notice .ad-text strong { color:var(--text-2); font-weight:600; }
+.controls button.del-btn { width:30px; height:30px; border-radius:7px; border:1px solid var(--border); background:var(--surface); color:var(--text-3); font-size:13px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .15s; margin-left:4px; }
+.controls button.del-btn:hover { border-color:rgba(248,113,113,.4); background:var(--danger-lo); color:var(--danger); }
+.cat-section-title { display:flex; align-items:center; gap:10px; margin-top:20px; margin-bottom:10px; }
+.cat-section-title:first-child { margin-top:0; }
+.cat-section-title .cat-label { font-size:12px; font-weight:600; color:var(--text-2); text-transform:uppercase; letter-spacing:.06em; white-space:nowrap; }
+.cat-section-title .cat-line { flex:1; height:1px; background:var(--border); }
+.cat-section-title .cat-count { font-size:11px; color:var(--text-3); white-space:nowrap; }
+.overdue-banner { display:flex; align-items:center; background:linear-gradient(135deg,rgba(248,113,113,.15),rgba(251,191,36,.1)); border:1px solid rgba(248,113,113,.25); border-radius:var(--radius); padding:14px 16px; margin-bottom:20px; animation:fadeUp .25s ease; }
+.overdue-banner-left { display:flex; align-items:flex-start; gap:12px; }
+.overdue-icon { font-size:22px; line-height:1.2; }
+.overdue-title { font-size:14px; font-weight:600; color:var(--danger); }
+.overdue-sub { font-size:12px; color:var(--text-3); margin-top:2px; }
+.recall-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:16px 18px; margin-bottom:14px; transition:border-color .2s; animation:slideIn .22s ease both; }
+.recall-card:hover { border-color:var(--border-hi); }
+.recall-card.overdue-card { border-color:rgba(248,113,113,.3); }
+.recall-card .recall-header { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:12px; }
+.recall-card .recall-name { font-size:15px; font-weight:600; color:var(--text-1); }
+.recall-card .recall-date { font-size:12px; color:var(--text-3); margin-top:2px; }
+.overdue-days { font-size:11px; font-weight:700; color:var(--danger); background:var(--danger-lo); border:1px solid rgba(248,113,113,.2); padding:3px 9px; border-radius:14px; white-space:nowrap; }
+.ok-days { font-size:11px; font-weight:600; color:var(--text-3); background:var(--surface-hi); border:1px solid var(--border); padding:3px 9px; border-radius:14px; white-space:nowrap; }
+.return-item { display:flex; align-items:center; justify-content:space-between; background:var(--surface-hi); border:1px solid var(--border); border-radius:var(--radius-sm); padding:9px 12px; margin-bottom:7px; transition:border-color .18s; }
+.return-item:hover { border-color:var(--border-hi); }
+.return-item .ri-left { display:flex; align-items:center; gap:10px; }
+.return-item .ri-icon { width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:14px; }
+.return-item .ri-name { font-size:13px; font-weight:500; color:var(--text-1); }
+.return-item .ri-qty { font-size:11px; color:var(--text-3); margin-top:1px; }
+.return-item .ri-controls { display:flex; align-items:center; gap:6px; }
+.return-item .ri-controls button { width:28px; height:28px; border-radius:7px; border:1px solid var(--border); background:var(--surface); color:var(--text-2); font-size:15px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .15s; font-family:'Kanit'; }
+.return-item .ri-controls button:hover { border-color:var(--success); color:var(--success); background:var(--success-lo); }
+.return-item .ri-controls .ri-val { font-size:13px; font-weight:600; color:var(--text-1); min-width:18px; text-align:center; font-family:'IBM Plex Mono',monospace; }
+.return-item .ri-controls button.ri-done { width:auto; padding:5px 10px; border-radius:7px; border-color:rgba(52,211,153,.3); background:var(--success-lo); color:var(--success); font-size:11px; font-weight:600; gap:3px; }
+.return-item .ri-controls button.ri-done:hover { background:rgba(52,211,153,.25); border-color:rgba(52,211,153,.5); color:var(--success); }
+.filter-row { display:flex; gap:6px; margin-bottom:22px; flex-wrap:wrap; }
+.filter-row button { display:flex; align-items:center; gap:6px; padding:8px 14px; border-radius:24px; border:1px solid var(--border); background:var(--surface-hi); color:var(--text-3); font-family:'Kanit',sans-serif; font-size:13px; font-weight:500; cursor:pointer; transition:all .2s cubic-bezier(.4,0,.2,1); }
+.filter-row button:hover { color:var(--text-2); border-color:var(--border-hi); }
+.filter-row button .filter-count { font-size:11px; font-weight:600; background:rgba(0,0,0,.25); padding:1px 7px; border-radius:10px; min-width:20px; text-align:center; }
+.filter-row button.active-filter { border-color:transparent; }
+.filter-row button[data-filter="all"].active-filter { background:var(--primary-lo); color:var(--primary); border-color:rgba(99,102,241,.3); }
+.filter-row button[data-filter="all"].active-filter .filter-count { background:rgba(99,102,241,.3); }
+.filter-row button[data-filter="pending"].active-filter { background:var(--accent-lo); color:var(--accent); border-color:rgba(6,182,212,.3); }
+.filter-row button[data-filter="pending"].active-filter .filter-count { background:rgba(6,182,212,.3); }
+.filter-row button[data-filter="deposit"].active-filter { background:var(--warning-lo); color:var(--warning); border-color:rgba(251,191,36,.3); }
+.filter-row button[data-filter="deposit"].active-filter .filter-count { background:rgba(251,191,36,.3); }
+.filter-row button[data-filter="paid"].active-filter { background:var(--success-lo); color:var(--success); border-color:rgba(52,211,153,.3); }
+.filter-row button[data-filter="paid"].active-filter .filter-count { background:rgba(52,211,153,.3); }
+.pay-type-row { display:flex; gap:6px; margin-bottom:10px; background:var(--surface-hi); border:1px solid var(--border); border-radius:var(--radius); padding:5px; }
+.pay-type-row button { flex:1; padding:9px 6px; border:1px solid transparent; border-radius:11px; background:transparent; color:var(--text-3); font-family:'Kanit',sans-serif; font-size:13px; font-weight:500; cursor:pointer; transition:all .2s cubic-bezier(.4,0,.2,1); display:flex; align-items:center; justify-content:center; gap:5px; }
+.pay-type-row button:hover { color:var(--text-2); }
+.pay-type-row button.active-pay { color:var(--text-1); background:var(--surface); border-color:var(--border-hi); box-shadow:0 2px 8px rgba(0,0,0,.2); }
+.pay-type-row button[data-type="paid"].active-pay { color:var(--success); border-color:rgba(52,211,153,.3); background:var(--success-lo); }
+.pay-type-row button[data-type="deposit"].active-pay { color:var(--warning); border-color:rgba(251,191,36,.3); background:var(--warning-lo); }
+.pay-type-row button[data-type="pending"].active-pay { color:var(--accent); border-color:rgba(6,182,212,.3); background:var(--accent-lo); }
+.deposit-row { display:flex; gap:8px; align-items:center; background:var(--warning-lo); border:1px solid rgba(251,191,36,.2); border-radius:var(--radius-sm); padding:10px 14px; margin-bottom:10px; animation:fadeUp .2s ease; }
+.deposit-row .dep-label { font-size:12px; color:var(--warning); font-weight:600; white-space:nowrap; min-width:60px; }
+.deposit-row input { margin-bottom:0; flex:1; padding:8px 12px; font-size:14px; background:var(--surface); border-color:rgba(251,191,36,.25); }
+.deposit-row input:focus { border-color:rgba(251,191,36,.5); box-shadow:0 0 0 3px rgba(251,191,36,.1); }
+.deposit-row .dep-remaining { font-size:12px; color:var(--warning); white-space:nowrap; font-weight:500; min-width:75px; text-align:right; }
+.btn-row { display:flex; gap:8px; margin-top:10px; }
+.btn-row button { flex:1; }
+.edit-item { display:flex; align-items:center; justify-content:space-between; background:var(--surface-hi); border:1px solid var(--border); border-radius:var(--radius); padding:11px 14px; margin-bottom:8px; transition:border-color .2s; animation:slideIn .22s ease both; }
+.edit-item:hover { border-color:var(--border-hi); }
+.edit-item .item-left { display:flex; align-items:center; gap:10px; }
+.edit-item .item-icon { width:34px; height:34px; border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:15px; }
+.edit-item .item-name { font-size:14px; font-weight:500; color:var(--text-1); }
+.edit-controls { display:flex; align-items:center; gap:6px; }
+.edit-controls button { width:32px; height:32px; border-radius:8px; border:1px solid var(--border); font-size:17px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .15s; background:var(--surface); color:var(--text-2); }
+.edit-controls button:hover { border-color:var(--warning); color:var(--warning); background:var(--warning-lo); }
+.edit-controls .qty-val { font-size:14px; font-weight:600; color:var(--text-1); min-width:22px; text-align:center; font-family:'IBM Plex Mono',monospace; }
+.edit-controls button.remove-edit-item { border-color:var(--danger-lo); background:var(--danger-lo); color:var(--danger); }
+.edit-controls button.remove-edit-item:hover { background:rgba(248,113,113,.28); border-color:rgba(248,113,113,.4); }
+.back-btn { display:inline-flex; align-items:center; gap:6px; padding:8px 12px; border-radius:var(--radius-sm); border:1px solid var(--border); background:var(--surface-hi); color:var(--text-2); font-family:'Kanit',sans-serif; font-size:13px; font-weight:500; cursor:pointer; transition:all .2s; margin-bottom:16px; }
+.back-btn:hover { background:var(--border-hi); color:var(--text-1); }
+.preview-card { background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-lg); padding:24px; margin-bottom:20px; animation:fadeUp .3s ease; }
+.preview-header { display:flex; justify-content:space-between; align-items:flex-start; padding-bottom:20px; border-bottom:1px solid var(--border); margin-bottom:20px; }
+.ph-left { display:flex; flex-direction:column; gap:8px; }
+.ph-logo { font-size:20px; font-weight:700; color:var(--text-1); line-height:1.1; }
+.ph-company { font-size:11px; color:var(--text-3); }
+.ph-right { text-align:right; }
+.ph-title { font-size:18px; font-weight:700; color:var(--warning); margin-bottom:12px; }
+.ph-info { display:flex; flex-direction:column; gap:4px; }
+.phi-row { font-size:12px; color:var(--text-3); display:flex; justify-content:flex-end; gap:8px; }
+.phi-row strong { color:var(--text-1); }
+.preview-customer { margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid var(--border); }
+.pc-label { font-size:11px; font-weight:700; color:var(--warning); text-transform:uppercase; letter-spacing:.05em; margin-bottom:4px; }
+.pc-name { font-size:14px; font-weight:600; color:var(--text-1); }
+.preview-items { margin-bottom:20px; }
+.preview-item-header { display:flex; gap:12px; padding:10px 12px; background:var(--surface-hi); border-radius:var(--radius-sm); font-size:11px; font-weight:600; color:var(--text-3); text-transform:uppercase; letter-spacing:.04em; margin-bottom:8px; }
+.preview-item { display:flex; gap:12px; padding:10px 12px; border-bottom:1px solid var(--border); align-items:center; }
+.pi-num { width:40px; font-size:12px; color:var(--text-3); text-align:center; }
+.pi-name { flex:1; font-size:13px; color:var(--text-1); }
+.pi-qty { width:70px; font-size:13px; color:var(--text-2); text-align:right; font-family:'IBM Plex Mono',monospace; }
+.pi-queue { width:60px; font-size:13px; color:var(--text-2); text-align:right; font-family:'IBM Plex Mono',monospace; }
+.preview-totals { padding-top:16px; border-top:1px solid var(--border); }
+.preview-total-row { display:flex; justify-content:space-between; padding:8px 12px; font-size:13px; }
+.preview-total-row.sub { font-size:12px; color:var(--text-3); }
+.pt-label { color:var(--text-3); font-weight:500; }
+.preview-total-row.sub .pt-label { padding-left:20px; }
+.pt-value { color:var(--text-1); font-weight:600; font-family:'IBM Plex Mono',monospace; }
+.preview-grand { display:flex; justify-content:space-between; padding:12px; margin-top:8px; background:var(--warning-lo); border-radius:var(--radius-sm); border:1px solid rgba(251,191,36,.2); }
+.pg-label { font-size:14px; font-weight:700; color:var(--warning); }
+.pg-value { font-size:16px; font-weight:700; color:var(--text-1); font-family:'IBM Plex Mono',monospace; }
 </style>
 </head>
 <body>
-
 <div id="main-app">
-
   <div class="topbar">
-    <button onclick="showPage('stock')" class="active">
-      <span class="tab-icon">📦</span> ของเข้า
-    </button>
-    <button onclick="showPage('out')">
-      <span class="tab-icon">🚚</span> ของออก
-    </button>
-    <button onclick="showPage('recall')">
-      <span class="tab-icon">🔄</span> คืน <span id="recallBadge" style="display:none;background:var(--danger);color:#fff;font-size:10px;padding:1px 6px;border-radius:10px;font-weight:700;">0</span>
-    </button>
-    <button onclick="showPage('bill')">
-      <span class="tab-icon">🧾</span> บิล
-    </button>
+    <button onclick="showPage('stock')" class="active"><span class="tab-icon">📦</span> ของเข้า</button>
+    <button onclick="showPage('out')"><span class="tab-icon">🚚</span> ของออก</button>
+    <button onclick="showPage('recall')"><span class="tab-icon">🔄</span> คืน <span id="recallBadge" style="display:none;background:var(--danger);color:#fff;font-size:10px;padding:1px 6px;border-radius:10px;font-weight:700;">0</span></button>
+    <button onclick="showPage('bill')"><span class="tab-icon">🧾</span> บิล</button>
   </div>
-
   <div class="container">
-
-    <!-- ════════ STOCK PAGE ════════ -->
     <section id="page-stock" class="page active">
-
       <div class="card">
         <div class="section-header"><h4>เพิ่มสินค้า</h4></div>
         <div class="input-row">
           <input id="newItemName" placeholder="ชื่อสินค้า">
           <input id="newItemQty" type="number" placeholder="จำนวน" min="1">
         </div>
-        <input id="newItemCat" placeholder="หมวดหมู่ (ไม่บังคับ)" list="catList">
-        <datalist id="catList"></datalist>
-        <button class="main" onclick="addStock()">
-          <i class="fas fa-plus"></i> เพิ่มสินค้า
-        </button>
+        <div class="section-header" style="margin-top:8px;margin-bottom:8px;"><h4 style="font-size:11px;">เลือกสีไอคอน</h4></div>
+        <div class="icon-picker">
+          <div class="icon-opt red" onclick="pickIcon('red','🔴')">🔴</div>
+          <div class="icon-opt orange" onclick="pickIcon('orange','🟠')">🟠</div>
+          <div class="icon-opt yellow sel" onclick="pickIcon('yellow','🟡')">🟡</div>
+          <div class="icon-opt green" onclick="pickIcon('green','🟢')">🟢</div>
+          <div class="icon-opt blue" onclick="pickIcon('blue','🔵')">🔵</div>
+          <div class="icon-opt indigo" onclick="pickIcon('indigo','🟣')">🟣</div>
+          <div class="icon-opt purple" onclick="pickIcon('purple','🟪')">🟪</div>
+          <div class="icon-opt pink" onclick="pickIcon('pink','🩷')">🩷</div>
+          <div class="icon-opt cyan" onclick="pickIcon('cyan','🔷')">🔷</div>
+          <div class="icon-opt teal" onclick="pickIcon('teal','💎')">💎</div>
+        </div>
+        <button class="main" onclick="addStock()"><i class="fas fa-plus"></i> เพิ่มสินค้า</button>
       </div>
-
-      <div class="section-header">
-        <h4>คลังสินค้า</h4>
-        <span class="count-badge" id="stockCount">0 รายการ</span>
-      </div>
+      <div class="section-header"><h4>คลังสินค้า</h4><span class="count-badge" id="stockCount">0 รายการ</span></div>
       <div id="stockList"></div>
     </section>
-
-    <!-- ════════ OUT PAGE ════════ -->
     <section id="page-out" class="page">
-
       <div class="card">
         <div class="section-header"><h4>ข้อมูลบิล</h4></div>
         <input id="billName" placeholder="ชื่อลูกค้า">
@@ -1341,7 +275,6 @@ button.main.success:hover {
           <input id="billPrice" type="number" placeholder="ราคา บาท">
         </div>
       </div>
-
       <div class="card">
         <div class="section-header"><h4>วิธีจ่าย</h4></div>
         <div class="pay-type-row">
@@ -1357,25 +290,13 @@ button.main.success:hover {
           </div>
         </div>
       </div>
-
-      <div class="section-header">
-        <h4>สินค้า</h4>
-      </div>
+      <div class="section-header"><h4>สินค้า</h4></div>
       <div id="outStock" style="margin-bottom:18px;"></div>
-      <div class="section-header">
-        <h4>รายการในบิล</h4>
-        <span class="count-badge" id="outCount">0</span>
-      </div>
+      <div class="section-header"><h4>รายการในบิล</h4><span class="count-badge" id="outCount">0</span></div>
       <div id="outBill"></div>
-
-      <button class="main" onclick="confirmBill()" style="margin-top:8px;">
-        <i class="fas fa-check-circle"></i> ยืนยันบิล
-      </button>
+      <button class="main" onclick="confirmBill()" style="margin-top:8px;"><i class="fas fa-check-circle"></i> ยืนยันบิล</button>
     </section>
-
-    <!-- ════════ RECALL PAGE ════════ -->
     <section id="page-recall" class="page" style="padding-top:10px;">
-
       <div id="overdueWarning" style="display:none;">
         <div class="overdue-banner">
           <div class="overdue-banner-left">
@@ -1387,78 +308,35 @@ button.main.success:hover {
           </div>
         </div>
       </div>
-
       <div id="recallList"></div>
     </section>
-
-    <!-- ════════ BILL PAGE ════════ -->
     <section id="page-bill" class="page" style="padding-top:10px;">
-
       <div class="filter-row">
-        <button data-filter="all" class="active-filter" onclick="setBillFilter('all')">
-          📊 ทั้งหมด <span class="filter-count" id="fc-all">0</span>
-        </button>
-        <button data-filter="pending" onclick="setBillFilter('pending')">
-          📋 วางบิล <span class="filter-count" id="fc-pending">0</span>
-        </button>
-        <button data-filter="deposit" onclick="setBillFilter('deposit')">
-          💰 มัดจำ <span class="filter-count" id="fc-deposit">0</span>
-        </button>
-        <button data-filter="paid" onclick="setBillFilter('paid')">
-          ✓ จ่ายแล้ว <span class="filter-count" id="fc-paid">0</span>
-        </button>
+        <button data-filter="all" class="active-filter" onclick="setBillFilter('all')">📊 ทั้งหมด <span class="filter-count" id="fc-all">0</span></button>
+        <button data-filter="pending" onclick="setBillFilter('pending')">📋 วางบิล <span class="filter-count" id="fc-pending">0</span></button>
+        <button data-filter="deposit" onclick="setBillFilter('deposit')">💰 มัดจำ <span class="filter-count" id="fc-deposit">0</span></button>
+        <button data-filter="paid" onclick="setBillFilter('paid')">✓ จ่ายแล้ว <span class="filter-count" id="fc-paid">0</span></button>
       </div>
-
-      <div class="auto-del-notice">
-        <span class="ad-icon">🕐</span>
-        <div class="ad-text">บิลที่ <strong>จ่ายแล้ว</strong> จะถูกลบอัตโมัติหลัง <strong>1 เดือน</strong></div>
-      </div>
-
+      <div class="auto-del-notice"><span class="ad-icon">🕐</span><div class="ad-text">บิลที่ <strong>จ่ายแล้ว</strong> จะถูกลบอัตโมัติหลัง <strong>1 เดือน</strong></div></div>
       <div id="clearPaidRow" style="display:none;">
         <div class="clear-paid-row">
-          <div class="clear-label">
-            ลบบิลจ่ายแล้วทั้งหมด
-            <span id="clearPaidCount"></span>
-          </div>
+          <div class="clear-label">ลบบิลจ่ายแล้วทั้งหมด<span id="clearPaidCount"></span></div>
           <button onclick="clearAllPaid()"><i class="fas fa-trash"></i> ลบทั้งหมด</button>
         </div>
       </div>
-
       <div id="billList"></div>
     </section>
-
-    <!-- ════════ PREVIEW PDF PAGE ════════ -->
     <section id="page-preview" class="page" style="padding-top:10px;">
-      
-      <button class="back-btn" onclick="cancelPreview()">
-        <i class="fas fa-arrow-left"></i> ย้อนกลับ
-      </button>
-
-      <div class="preview-card">
-        <div id="previewContent"></div>
-      </div>
-
+      <button class="back-btn" onclick="cancelPreview()"><i class="fas fa-arrow-left"></i> ย้อนกลับ</button>
+      <div class="preview-card"><div id="previewContent"></div></div>
       <div class="btn-row">
-        <button class="main secondary" onclick="cancelPreview()">
-          <i class="fas fa-times"></i> ยกเลิก
-        </button>
-        <button class="main" onclick="editBeforePrint()" style="background:linear-gradient(135deg,var(--warning),#fcd34d);color:#78350f;">
-          <i class="fas fa-edit"></i> แก้ไขบิล
-        </button>
+        <button class="main secondary" onclick="cancelPreview()"><i class="fas fa-times"></i> ยกเลิก</button>
+        <button class="main" onclick="editBeforePrint()" style="background:linear-gradient(135deg,var(--warning),#fcd34d);color:#78350f;"><i class="fas fa-edit"></i> แก้ไขบิล</button>
       </div>
-      
-      <button class="main success" onclick="printPDF()" style="margin-top:8px;">
-        <i class="fas fa-print"></i> พิมพ์ PDF
-      </button>
+      <button class="main success" onclick="printPDF()" style="margin-top:8px;"><i class="fas fa-print"></i> พิมพ์ PDF</button>
     </section>
-
-    <!-- ════════ EDIT BILL PAGE ════════ -->
     <section id="page-edit" class="page" style="padding-top:10px;">
-      
-      <button class="back-btn" onclick="cancelEdit()">
-        <i class="fas fa-arrow-left"></i> ย้อนกลับ
-      </button>
-
+      <button class="back-btn" onclick="cancelEdit()"><i class="fas fa-arrow-left"></i> ย้อนกลับ</button>
       <div class="card">
         <div class="section-header"><h4>แก้ไขข้อมูลบิล</h4></div>
         <input id="editBillName" placeholder="ชื่อลูกค้า">
@@ -1467,7 +345,6 @@ button.main.success:hover {
           <input id="editBillPrice" type="number" placeholder="ราคา บาท" oninput="renderEdit()">
         </div>
       </div>
-
       <div class="card">
         <div class="section-header"><h4>วิธีจ่าย</h4></div>
         <div class="pay-type-row">
@@ -1483,912 +360,66 @@ button.main.success:hover {
           </div>
         </div>
       </div>
-
-      <div class="section-header">
-        <h4>สินค้าในบิล</h4>
-        <span class="count-badge" id="editItemCount">0</span>
-      </div>
+      <div class="section-header"><h4>สินค้าในบิล</h4><span class="count-badge" id="editItemCount">0</span></div>
       <div id="editItemsList"></div>
-
-      <div class="section-header" style="margin-top:20px;">
-        <h4>เพิ่มสินค้า</h4>
-      </div>
+      <div class="section-header" style="margin-top:20px;"><h4>เพิ่มสินค้า</h4></div>
       <div id="editAddStock"></div>
-
       <div class="btn-row" style="margin-top:20px;">
-        <button class="main secondary" onclick="cancelEdit()">
-          <i class="fas fa-times"></i> ยกเลิก
-        </button>
-        <button class="main" onclick="saveEdit()">
-          <i class="fas fa-save"></i> บันทึก
-        </button>
+        <button class="main secondary" onclick="cancelEdit()"><i class="fas fa-times"></i> ยกเลิก</button>
+        <button class="main" onclick="saveEdit()"><i class="fas fa-save"></i> บันทึก</button>
       </div>
     </section>
-
   </div>
 </div>
-
 <script>
-// ─── State ───
-let items = JSON.parse(localStorage.getItem('items')) || [];
-let bills = JSON.parse(localStorage.getItem('bills')) || [];
-let outItems = [];
-let currentPayType = 'pending'; // pending | deposit | paid
-let billFilter = 'all';         // all | pending | deposit | paid
-
-// Edit mode state
-let editingBillIndex = null;
-let editPayType = 'pending';
-let editItems = [];
-
-document.getElementById('billDate').value = new Date().toISOString().split('T')[0];
-
-// ─── Persistence ───
-function save() {
-  localStorage.setItem('items', JSON.stringify(items));
-  localStorage.setItem('bills', JSON.stringify(bills));
-}
-
-// ─── Navigation ───
-function showPage(p) {
-  document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
-  document.querySelectorAll('.topbar button').forEach(x => x.classList.remove('active'));
-  const map = { stock: 0, out: 1, recall: 2, bill: 3 };
-  document.getElementById('page-' + p).classList.add('active');
-  if (map[p] !== undefined) {
-    document.querySelectorAll('.topbar button')[map[p]].classList.add('active');
-  }
-}
-
-// ─── Pay Type ───
-function setPayType(type) {
-  currentPayType = type;
-  document.querySelectorAll('.pay-type-row button').forEach(b => b.classList.remove('active-pay'));
-  document.querySelector(`.pay-type-row button[data-type="${type}"]`).classList.add('active-pay');
-  document.getElementById('depositDetail').style.display = (type === 'deposit') ? 'block' : 'none';
-  if (type !== 'deposit') document.getElementById('depositAmt').value = '';
-  render();
-}
-
-// ─── Bill Filter ───
-function setBillFilter(f) {
-  billFilter = f;
-  document.querySelectorAll('.filter-row button').forEach(b => b.classList.remove('active-filter'));
-  document.querySelector(`.filter-row button[data-filter="${f}"]`).classList.add('active-filter');
-  render();
-}
-
-// ─── Stock ───
-function addStock() {
-  const n = document.getElementById('newItemName').value.trim();
-  const q = Number(document.getElementById('newItemQty').value);
-  const cat = document.getElementById('newItemCat').value.trim();
-  if (!n || q <= 0) return;
-  const existing = items.find(i => i.name === n);
-  if (existing) {
-    existing.qty += q;
-    if (cat) existing.category = cat;
-  } else {
-    items.push({ name: n, qty: q, category: cat || '' });
-  }
-  document.getElementById('newItemName').value = '';
-  document.getElementById('newItemQty').value = '';
-  document.getElementById('newItemCat').value = '';
-  save(); render();
-}
-
-// ─── ลบสินค้า ───
-function deleteItem(i) {
-  if (!confirm(`ลบ "${items[i].name}" ออก?`)) return;
-  items.splice(i, 1);
-  save(); render();
-}
-
-// ─── Out ───
-function addOutByQty(i) {
-  const qtyInput = document.getElementById('outQty_' + i);
-  const queueInput = document.getElementById('outQueue_' + i);
-  
-  let qty = Number(qtyInput.value) || 1;
-  let queue = Number(queueInput.value) || 1;
-  
-  if (qty <= 0) qty = 1;
-  if (queue <= 0) queue = 1;
-  if (qty > items[i].qty) qty = items[i].qty;
-  if (items[i].qty <= 0) return;
-
-  items[i].qty -= qty;
-  const b = outItems.find(x => x.name === items[i].name);
-  b ? (b.qty += qty, b.queue += queue) : outItems.push({ name: items[i].name, qty: qty, queue: queue });
-
-  qtyInput.value = '';
-  queueInput.value = '';
-  save(); render();
-}
-
-function removeOut(i) {
-  const b = outItems[i];
-  const it = items.find(x => x.name === b.name);
-  if (it) it.qty++;
-  b.qty--;
-  if (b.qty > 0 && b.queue > 0) b.queue--; // ลด queue ตาม
-  if (b.qty <= 0) outItems.splice(i, 1);
-  save(); render();
-}
-
-function confirmBill() {
-  if (!outItems.length) { alert('ยังไม่มีสินค้าในบิล'); return; }
-  const price = Number(document.getElementById('billPrice').value) || 0;
-  const deposit = (currentPayType === 'deposit') ? (Number(document.getElementById('depositAmt').value) || 0) : 0;
-
-  bills.push({
-    billName: document.getElementById('billName').value || 'ไม่ระบุ',
-    date: document.getElementById('billDate').value,
-    price: price,
-    payType: currentPayType,
-    deposit: deposit,
-    remaining: (currentPayType === 'deposit') ? Math.max(price - deposit, 0) : (currentPayType === 'paid' ? 0 : price),
-    status: currentPayType === 'paid' ? 'paid' : 'pending',
-    items: JSON.parse(JSON.stringify(outItems))
-  });
-
-  outItems = [];
-  document.getElementById('billName').value = '';
-  document.getElementById('billPrice').value = '';
-  document.getElementById('depositAmt').value = '';
-  setPayType('pending');
-  save(); render(); showPage('bill');
-}
-
-// ─── Bill Actions ───
-function markPaid(i) {
-  bills[i].items.forEach(b => {
-    const it = items.find(x => x.name === b.name);
-    if (it) it.qty += b.qty;
-  });
-  bills[i].status = 'paid';
-  bills[i].remaining = 0;
-  bills[i].paidAt = Date.now();
-  save(); render();
-}
-
-function clearBill(i) {
-  bills[i].items.forEach(b => {
-    const it = items.find(x => x.name === b.name);
-    if (it) it.qty += b.qty;
-  });
-  bills.splice(i, 1);
-  save(); render();
-}
-
-// ─── Auto-delete บิลจ่ายแล้วที่เกิน 30 วัน ───
-function autoCleanup() {
-  const ONE_MONTH = 30 * 24 * 60 * 60 * 1000;
-  const now = Date.now();
-  const before = bills.length;
-  bills = bills.filter(b => {
-    if (b.status === 'paid' && b.paidAt && (now - b.paidAt) > ONE_MONTH) return false;
-    return true;
-  });
-  if (bills.length !== before) { save(); }
-}
-
-// ─── ลบบิลจ่ายแล้วรายบิล ───
-function deletePaidBill(i) {
-  bills.splice(i, 1);
-  save(); render();
-}
-
-// ─── ลบบิลจ่ายแล้วทั้งหมด (manual) ───
-function clearAllPaid() {
-  const cnt = bills.filter(b => b.status === 'paid').length;
-  if (!cnt) return;
-  if (!confirm(`ลบบิลจ่ายแล้วทั้งหมด ${cnt} บิล?`)) return;
-  bills = bills.filter(b => b.status !== 'paid');
-  save(); render();
-}
-
-// ─── เรียกคืน ───
-const OVERDUE_DAYS = 7;
-
-function getDaysSince(dateStr) {
-  const d = new Date(dateStr);
-  const now = new Date();
-  return Math.floor((now - d) / (1000 * 60 * 60 * 24));
-}
-
-function returnItem(billIdx, itemName) {
-  const bill = bills[billIdx];
-  const item = bill.items.find(x => x.name === itemName);
-  if (!item || item.qty <= 0) return;
-
-  const stock = items.find(x => x.name === itemName);
-  if (stock) stock.qty++;
-
-  item.qty--;
-  bill.items = bill.items.filter(x => x.qty > 0);
-
-  if (bill.items.length === 0) {
-    bill.status = 'paid';
-    bill.remaining = 0;
-    bill.paidAt = Date.now();
-  }
-
-  save(); render(); renderRecall();
-}
-
-function renderRecall() {
-  const pending = bills
-    .map((b, i) => ({ ...b, idx: i }))
-    .filter(b => b.status === 'pending');
-
-  const overdue = pending.filter(b => getDaysSince(b.date) > OVERDUE_DAYS);
-
-  const banner = document.getElementById('overdueWarning');
-  if (overdue.length > 0) {
-    banner.style.display = 'block';
-    document.getElementById('overdueSubText').textContent =
-      overdue.length + ' บิล เกิน ' + OVERDUE_DAYS + ' วัน รอคืน';
-  } else {
-    banner.style.display = 'none';
-  }
-
-  const badge = document.getElementById('recallBadge');
-  if (overdue.length > 0) {
-    badge.style.display = 'inline-block';
-    badge.textContent = overdue.length;
-  } else {
-    badge.style.display = 'none';
-  }
-
-  document.getElementById('recallList').innerHTML = pending.length
-    ? pending.map((b, ri) => {
-        const days = getDaysSince(b.date);
-        const isOver = days > OVERDUE_DAYS;
-        return `
-        <div class="recall-card ${isOver ? 'overdue-card' : ''}" style="animation-delay:${ri*.05}s">
-          <div class="recall-header">
-            <div>
-              <div class="recall-name">${b.billName}</div>
-              <div class="recall-date">เช่าตั้งแต่ ${b.date}</div>
-            </div>
-            <span class="${isOver ? 'overdue-days' : 'ok-days'}">${isOver ? '⚡ เกิน ' + days + ' วัน' : days + ' วัน'}</span>
-          </div>
-          <div>
-            ${b.items.map(it => `
-              <div class="return-item">
-                <div class="ri-left">
-                  <div class="ri-icon">📦</div>
-                  <div>
-                    <div class="ri-name">${it.name}</div>
-                    <div class="ri-qty">คงอยู่กับลูกค้า ${it.qty} ชิ้น</div>
-                  </div>
-                </div>
-                <div class="ri-controls">
-                  <button onclick="returnItem(${b.idx}, '${it.name}')" class="ri-done">↩ คืน</button>
-                </div>
-              </div>`).join('')}
-          </div>
-        </div>`;
-      }).join('')
-    : `<div class="empty-state"><div class="empty-icon">✅</div>ไม่มีของที่รอคืน</div>`;
-}
-
-function getBadgeHTML(bill) {
-  if (bill.status === 'paid') return `<span class="badge paid">✓ จ่ายแล้ว</span>`;
-  if (bill.payType === 'deposit') return `<span class="badge deposit">💰 มัดจำ</span>`;
-  return `<span class="badge invoiced">📋 วางบิล</span>`;
-}
-
-// ─── EDIT BILL FUNCTIONS ───
-function startEdit(billIdx) {
-  const bill = bills[billIdx];
-  if (bill.status === 'paid') {
-    alert('ไม่สามารถแก้ไขบิลที่จ่ายแล้ว');
-    return;
-  }
-
-  editingBillIndex = billIdx;
-  editPayType = bill.payType;
-  editItems = JSON.parse(JSON.stringify(bill.items));
-
-  document.getElementById('editBillName').value = bill.billName;
-  document.getElementById('editBillDate').value = bill.date;
-  document.getElementById('editBillPrice').value = bill.price;
-  document.getElementById('editDepositAmt').value = bill.deposit || '';
-
-  setEditPayType(editPayType);
-  renderEdit();
-  showPage('edit');
-}
-
-function setEditPayType(type) {
-  editPayType = type;
-  document.querySelectorAll('#page-edit .pay-type-row button').forEach(b => b.classList.remove('active-pay'));
-  document.querySelector(`#page-edit .pay-type-row button[data-type="${type}"]`).classList.add('active-pay');
-  document.getElementById('editDepositDetail').style.display = (type === 'deposit') ? 'block' : 'none';
-  if (type !== 'deposit') document.getElementById('editDepositAmt').value = '';
-  renderEdit();
-}
-
-function editItemQtyChange(itemName, delta) {
-  const item = editItems.find(x => x.name === itemName);
-  if (!item) return;
-  
-  const stock = items.find(x => x.name === itemName);
-  
-  if (delta > 0) {
-    // เพิ่ม - ต้องมี stock พอ
-    if (stock && stock.qty > 0) {
-      item.qty++;
-      stock.qty--;
-    }
-  } else {
-    // ลด - คืนเข้า stock
-    if (item.qty > 0) {
-      item.qty--;
-      if (stock) stock.qty++;
-    }
-  }
-  
-  editItems = editItems.filter(x => x.qty > 0);
-  save();
-  renderEdit();
-}
-
-function removeEditItem(itemName) {
-  const item = editItems.find(x => x.name === itemName);
-  if (!item) return;
-  
-  const stock = items.find(x => x.name === itemName);
-  if (stock) stock.qty += item.qty;
-  
-  editItems = editItems.filter(x => x.name !== itemName);
-  save();
-  renderEdit();
-}
-
-function addEditItemByQty(stockIdx) {
-  const qtyInput = document.getElementById('editAddQty_' + stockIdx);
-  const queueInput = document.getElementById('editAddQueue_' + stockIdx);
-  
-  let qty = Number(qtyInput.value) || 1;
-  let queue = Number(queueInput.value) || 1;
-  
-  if (qty <= 0) qty = 1;
-  if (queue <= 0) queue = 1;
-  if (qty > items[stockIdx].qty) qty = items[stockIdx].qty;
-  if (items[stockIdx].qty <= 0) return;
-
-  items[stockIdx].qty -= qty;
-  const existing = editItems.find(x => x.name === items[stockIdx].name);
-  existing ? (existing.qty += qty, existing.queue += queue) : editItems.push({ name: items[stockIdx].name, qty: qty, queue: queue });
-
-  qtyInput.value = '';
-  queueInput.value = '';
-  save();
-  renderEdit();
-}
-
-function saveEdit() {
-  if (!editItems.length) {
-    alert('ต้องมีสินค้าในบิลอย่างน้อย 1 รายการ');
-    return;
-  }
-
-  const price = Number(document.getElementById('editBillPrice').value) || 0;
-  const deposit = (editPayType === 'deposit') ? (Number(document.getElementById('editDepositAmt').value) || 0) : 0;
-
-  bills[editingBillIndex] = {
-    ...bills[editingBillIndex],
-    billName: document.getElementById('editBillName').value || 'ไม่ระบุ',
-    date: document.getElementById('editBillDate').value,
-    price: price,
-    payType: editPayType,
-    deposit: deposit,
-    remaining: (editPayType === 'deposit') ? Math.max(price - deposit, 0) : (editPayType === 'paid' ? 0 : price),
-    status: editPayType === 'paid' ? 'paid' : 'pending',
-    items: JSON.parse(JSON.stringify(editItems))
-  };
-
-  save();
-  cancelEdit();
-  render();
-  showPage('bill');
-}
-
-function cancelEdit() {
-  // คืนสินค้าที่เอาออกมาแก้ไขกลับเข้า stock (ถ้ามี)
-  const originalBill = bills[editingBillIndex];
-  if (originalBill) {
-    // คำนวณความต่าง
-    originalBill.items.forEach(orig => {
-      const current = editItems.find(x => x.name === orig.name);
-      const diff = orig.qty - (current ? current.qty : 0);
-      if (diff > 0) {
-        const stock = items.find(x => x.name === orig.name);
-        if (stock) stock.qty += diff;
-      } else if (diff < 0) {
-        const stock = items.find(x => x.name === orig.name);
-        if (stock) stock.qty += diff; // diff เป็นลบอยู่แล้ว
-      }
-    });
-    
-    // สินค้าใหม่ที่เพิ่มเข้ามา
-    editItems.forEach(edit => {
-      const inOrig = originalBill.items.find(x => x.name === edit.name);
-      if (!inOrig) {
-        const stock = items.find(x => x.name === edit.name);
-        if (stock) stock.qty += edit.qty;
-      }
-    });
-  }
-
-  editingBillIndex = null;
-  editItems = [];
-  editPayType = 'pending';
-  save();
-  render();
-  showPage('bill');
-}
-
-function renderEdit() {
-  if (editingBillIndex === null) return;
-
-  // Items in bill
-  const itemCount = editItems.reduce((s, i) => s + i.qty, 0);
-  document.getElementById('editItemCount').textContent = itemCount;
-  
-  document.getElementById('editItemsList').innerHTML = editItems.length
-    ? editItems.map((item, idx) => `
-        <div class="edit-item" style="animation-delay:${idx*.04}s">
-          <div class="item-left">
-            <div class="item-icon">✏️</div>
-            <div>
-              <div class="item-name">${item.name}</div>
-              <div class="item-qty" style="font-size:11px;color:var(--text-3);">${item.qty} ชิ้น • ${item.queue} คิว</div>
-            </div>
-          </div>
-          <div class="edit-controls">
-            <button onclick="editItemQtyChange('${item.name}', -1)">−</button>
-            <span class="qty-val">${item.qty}</span>
-            <button onclick="editItemQtyChange('${item.name}', 1)">+</button>
-            <button class="remove-edit-item" onclick="removeEditItem('${item.name}')">🗑</button>
-          </div>
-        </div>`).join('')
-    : `<div class="empty-state"><div class="empty-icon">📦</div>ยังไม่มีสินค้าในบิล</div>`;
-
-  // Available stock to add
-  const grouped = {};
-  items.forEach((it, i) => {
-    const key = it.category || '';
-    if (!grouped[key]) grouped[key] = [];
-    grouped[key].push({ ...it, idx: i });
-  });
-  const cats = [...new Set(items.map(i => i.category).filter(Boolean))].sort();
-  const sortedKeys = cats.concat(grouped[''] ? [''] : []);
-
-  let stockHTML = '';
-  sortedKeys.forEach(key => {
-    const group = grouped[key];
-    if (!group) return;
-    const label = key || 'ไม่มีหมวด';
-    stockHTML += `
-      <div class="cat-section-title">
-        <span class="cat-label">${label}</span>
-        <span class="cat-line"></span>
-        <span class="cat-count">${group.length} รายการ</span>
-      </div>`;
-    stockHTML += group.map((it, ri) => `
-      <div class="stock-item" style="animation-delay:${ri*.04}s">
-        <div class="item-left">
-          <div class="item-icon" style="background:var(--success-lo);color:var(--success);">📌</div>
-          <div>
-            <div class="item-name">${it.name}</div>
-            <div class="item-qty">${it.qty} ชิ้นคงเหลือ</div>
-          </div>
-        </div>
-        <div class="out-qty-wrap">
-          <input type="number" min="1" max="${it.qty}" placeholder="ชิ้น" class="out-qty-input" id="editAddQty_${it.idx}" onkeydown="if(event.key==='Enter') document.getElementById('editAddQueue_${it.idx}').focus()">
-          <input type="number" min="1" placeholder="คิว" class="out-qty-input" id="editAddQueue_${it.idx}" onkeydown="if(event.key==='Enter') addEditItemByQty(${it.idx})">
-          <button class="add-out-btn" onclick="addEditItemByQty(${it.idx})">เพิ่ม</button>
-        </div>
-      </div>`).join('');
-  });
-
-  document.getElementById('editAddStock').innerHTML = stockHTML || `<div class="empty-state"><div class="empty-icon">📦</div>ไม่มีสินค้าเหลือ</div>`;
-
-  // Deposit remaining
-  const totalPrice = Number(document.getElementById('editBillPrice').value) || 0;
-  const depAmt = Number(document.getElementById('editDepositAmt').value) || 0;
-  const rem = Math.max(totalPrice - depAmt, 0);
-  document.getElementById('editDepRemaining').textContent = 'คงเหลือ ' + rem.toLocaleString();
-}
-
-// ─── Render ───
-function render() {
-  // ── Stock list (grouped by category) ──
-  document.getElementById('stockCount').textContent = items.length + ' รายการ';
-
-  const cats = [...new Set(items.map(i => i.category).filter(Boolean))].sort();
-  document.getElementById('catList').innerHTML = cats.map(c => `<option value="${c}">`).join('');
-
-  const grouped = {};
-  items.forEach((it, i) => {
-    const key = it.category || '';
-    if (!grouped[key]) grouped[key] = [];
-    grouped[key].push({ ...it, idx: i });
-  });
-
-  const sortedKeys = cats.concat(grouped[''] ? [''] : []);
-
-  let stockHTML = '';
-  sortedKeys.forEach(key => {
-    const group = grouped[key];
-    if (!group) return;
-    const label = key || 'ไม่มีหมวด';
-    stockHTML += `
-      <div class="cat-section-title">
-        <span class="cat-label">${label}</span>
-        <span class="cat-line"></span>
-        <span class="cat-count">${group.length} รายการ</span>
-      </div>`;
-    stockHTML += group.map((it, ri) => `
-      <div class="stock-item" style="animation-delay:${ri*.04}s">
-        <div class="item-left">
-          <div class="item-icon">📦</div>
-          <div>
-            <div class="item-name">${it.name}</div>
-            <div class="item-qty">คงเหลือ ${it.qty} ชิ้น</div>
-          </div>
-        </div>
-        <div class="controls">
-          <button onclick="items[${it.idx}].qty--; save(); render();" title="ลด">−</button>
-          <span class="qty-val">${it.qty}</span>
-          <button onclick="items[${it.idx}].qty++; save(); render();" title="เพิ่ม">+</button>
-          <button class="del-btn" onclick="deleteItem(${it.idx})" title="ลบสินค้า">🗑</button>
-        </div>
-      </div>`).join('');
-  });
-
-  document.getElementById('stockList').innerHTML = stockHTML || `<div class="empty-state"><div class="empty-icon">📦</div>ยังไม่มีสินค้า</div>`;
-
-  // ── Out — stock selector (grouped by category) ──
-  const outGrouped = {};
-  items.forEach((it, i) => {
-    const key = it.category || '';
-    if (!outGrouped[key]) outGrouped[key] = [];
-    outGrouped[key].push({ ...it, idx: i });
-  });
-  const outCats = [...new Set(items.map(i => i.category).filter(Boolean))].sort();
-  const outSortedKeys = outCats.concat(outGrouped[''] ? [''] : []);
-
-  let outStockHTML = '';
-  outSortedKeys.forEach(key => {
-    const group = outGrouped[key];
-    if (!group) return;
-    const label = key || 'ไม่มีหมวด';
-    outStockHTML += `
-      <div class="cat-section-title">
-        <span class="cat-label">${label}</span>
-        <span class="cat-line"></span>
-        <span class="cat-count">${group.length} รายการ</span>
-      </div>`;
-    outStockHTML += group.map((it, ri) => `
-      <div class="stock-item" style="animation-delay:${ri*.04}s">
-        <div class="item-left">
-          <div class="item-icon" style="background:var(--accent-lo);color:var(--accent);">📌</div>
-          <div>
-            <div class="item-name">${it.name}</div>
-            <div class="item-qty">${it.qty} ชิ้นคงเหลือ</div>
-          </div>
-        </div>
-        <div class="out-qty-wrap">
-          <input type="number" min="1" max="${it.qty}" placeholder="ชิ้น" class="out-qty-input" id="outQty_${it.idx}" onkeydown="if(event.key==='Enter') document.getElementById('outQueue_${it.idx}').focus()">
-          <input type="number" min="1" placeholder="คิว" class="out-qty-input" id="outQueue_${it.idx}" onkeydown="if(event.key==='Enter') addOutByQty(${it.idx})">
-          <button class="add-out-btn" onclick="addOutByQty(${it.idx})">เพิ่ม</button>
-        </div>
-      </div>`).join('');
-  });
-
-  document.getElementById('outStock').innerHTML = outStockHTML || `<div class="empty-state"><div class="empty-icon">📦</div>ยังไม่มีสินค้า</div>`;
-
-  // ── Out — bill items ──
-  const outTotal = outItems.reduce((s, o) => s + o.qty, 0);
-  document.getElementById('outCount').textContent = outTotal;
-  document.getElementById('outBill').innerHTML = outItems.length
-    ? outItems.map((b, i) => `
-        <div class="stock-item" style="animation-delay:${i*.04}s">
-          <div class="item-left">
-            <div class="item-icon" style="background:var(--success-lo);color:var(--success);">✓</div>
-            <div>
-              <div class="item-name">${b.name}</div>
-              <div class="item-qty">${b.qty} ชิ้น • ${b.queue} คิว</div>
-            </div>
-          </div>
-          <button class="remove-out-btn" onclick="removeOut(${i})">−</button>
-        </div>`).join('')
-    : `<div class="empty-state"><div class="empty-icon">🧾</div>ยังไม่มีสินค้าในบิล</div>`;
-
-  // ── Deposit remaining preview ──
-  const totalPrice = Number(document.getElementById('billPrice').value) || 0;
-  const depAmt = Number(document.getElementById('depositAmt').value) || 0;
-  const rem = Math.max(totalPrice - depAmt, 0);
-  document.getElementById('depRemaining').textContent = 'คงเหลือ ' + rem.toLocaleString();
-
-  // ── Bills — filter counts ──
-  const cAll = bills.length;
-  const cPending = bills.filter(b => b.status === 'pending' && b.payType === 'pending').length;
-  const cDeposit = bills.filter(b => b.payType === 'deposit' && b.status === 'pending').length;
-  const cPaid   = bills.filter(b => b.status === 'paid').length;
-
-  document.getElementById('fc-all').textContent     = cAll;
-  document.getElementById('fc-pending').textContent = cPending;
-  document.getElementById('fc-deposit').textContent = cDeposit;
-  document.getElementById('fc-paid').textContent    = cPaid;
-
-  // ── show/hide ลบทั้งหมด row ──
-  const paidCount = bills.filter(b => b.status === 'paid').length;
-  const showClear = (billFilter === 'paid' && paidCount > 0);
-  document.getElementById('clearPaidRow').style.display = showClear ? 'block' : 'none';
-  document.getElementById('clearPaidCount').textContent = paidCount + ' บิล';
-
-  // ── filter logic ──
-  let filtered = bills.map((b, i) => ({ ...b, idx: i }));
-
-  if (billFilter === 'pending')  filtered = filtered.filter(b => b.status === 'pending' && b.payType === 'pending');
-  if (billFilter === 'deposit')  filtered = filtered.filter(b => b.payType === 'deposit' && b.status === 'pending');
-  if (billFilter === 'paid')     filtered = filtered.filter(b => b.status === 'paid');
-
-  // ── render list ──
-  document.getElementById('billList').innerHTML = filtered.length
-    ? filtered.map((b, ri) => `
-        <div class="bill-card" style="animation-delay:${ri*.05}s; ${b.status === 'paid' ? 'opacity:.65;' : ''}">
-          <div class="bill-header">
-            <div>
-              <div class="bill-name">${b.billName}</div>
-              <div class="bill-meta">${b.date}</div>
-            </div>
-            ${getBadgeHTML(b)}
-          </div>
-          <div class="bill-items-list">
-            ${b.items.map(it => `<span class="tag">${it.name} ${it.qty}ชิ้น•${it.queue}คิว</span>`).join('')}
-          </div>
-          <div class="bill-price">
-            ${b.price.toLocaleString()} <span>บาท</span>
-            ${b.payType === 'deposit'
-              ? `<span style="margin-left:10px;font-size:12px;color:${b.status==='paid'?'var(--text-3)':'var(--warning)'};font-family:'Kanit';font-weight:500;">
-                  มัดจำ ${b.deposit.toLocaleString()} • คงเหลือ <strong>${b.remaining.toLocaleString()}</strong>
-                </span>` : ''}
-          </div>
-          ${b.status === 'pending' ? `
-            <div class="bill-actions">
-              <button class="main secondary" onclick="generatePDF(${b.idx})"><i class="fas fa-file-pdf"></i> ออกบิล</button>
-              <button class="main" onclick="startEdit(${b.idx})" style="background:linear-gradient(135deg,var(--warning),#fcd34d);color:#78350f;"><i class="fas fa-edit"></i> แก้ไข</button>
-            </div>
-            <div class="bill-actions" style="margin-top:8px;">
-              <button class="main success" onclick="markPaid(${b.idx})"><i class="fas fa-check"></i> จ่ายแล้ว</button>
-              <button class="main danger"  onclick="clearBill(${b.idx})"><i class="fas fa-trash"></i> ลบ</button>
-            </div>` : `
-            <div class="bill-actions">
-              <button class="main secondary" onclick="generatePDF(${b.idx})"><i class="fas fa-file-pdf"></i> ออกบิล</button>
-              <button class="main danger" onclick="deletePaidBill(${b.idx})"><i class="fas fa-trash"></i> ลบบิล</button>
-            </div>`}
-        </div>`).join('')
-    : `<div class="empty-state"><div class="empty-icon">📋</div>ไม่มีบิลในประเภทนี้</div>`;
-
-  renderRecall();
-}
-
-// ─── Preview & Edit before PDF ───
-let previewBillIndex = null;
-
-function generatePDF(i) {
-  previewBillIndex = i;
-  renderPreview();
-  showPage('preview');
-}
-
-function printPDF() {
-  if (previewBillIndex === null) return;
-  
-  const b = bills[previewBillIndex];
-  const dateClean = (b.date || '').replace(/-/g, '');
-  const billNo = 'QT' + dateClean + String(previewBillIndex + 1).padStart(4, '0');
-  const subtotal = b.price;
-  const grandTotal = b.payType === 'deposit' ? b.remaining : subtotal;
-
-  let rowsHTML = '';
-  b.items.forEach((it, idx) => {
-    rowsHTML += '<tr style="' + (idx % 2 === 1 ? 'background:#f9fafb;' : '') + '">'
-      + '<td style="text-align:center;">' + (idx + 1) + '</td>'
-      + '<td>' + it.name + '</td>'
-      + '<td style="text-align:right;">' + it.qty + ' ชิ้น</td>'
-      + '<td style="text-align:right;">' + it.queue + ' คิว</td>'
-      + '<td style="text-align:right;">-</td>'
-      + '</tr>';
-  });
-
-  let totalsHTML = '<tr>'
-    + '<td colspan="3"></td>'
-    + '<td style="text-align:right;color:#6b7280;font-weight:600;padding-top:10px;">รวมเป็นเงิน</td>'
-    + '<td style="text-align:right;padding-top:10px;">' + subtotal.toLocaleString() + ' บาท</td>'
-    + '</tr>';
-  if (b.payType === 'deposit') {
-    totalsHTML += '<tr><td colspan="3"></td>'
-      + '<td style="text-align:right;color:#6b7280;font-weight:600;">มัดจำ</td>'
-      + '<td style="text-align:right;">' + b.deposit.toLocaleString() + ' บาท</td></tr>'
-      + '<tr><td colspan="3"></td>'
-      + '<td style="text-align:right;color:#6b7280;font-weight:600;">คงเหลือ</td>'
-      + '<td style="text-align:right;">' + b.remaining.toLocaleString() + ' บาท</td></tr>';
-  }
-
-  const html = '<!DOCTYPE html><html lang="th"><head>'
-    + '<meta charset="UTF-8">'
-    + '<title>BIGBALL ' + billNo + '</title>'
-    + '<link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">'
-    + '<style>'
-    + '* { margin:0; padding:0; box-sizing:border-box; }'
-    + 'body { font-family:"Kanit",sans-serif; color:#1f2937; padding:40px 48px; background:#fff; }'
-    + '@media print { body { padding:28px 40px; } @page { size:A4; margin:0; } }'
-    + '.page { position:relative; width:100%; }'
-    + '.corner { position:absolute; top:0; right:0; width:0; height:0; border-style:solid; border-width:0 70px 70px 0; border-color:transparent #f59e0b transparent transparent; }'
-    + '.header { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:28px; }'
-    + '.logo-big { font-size:22px; font-weight:700; color:#1f2937; line-height:1.1; }'
-    + '.logo-small { font-size:26px; font-weight:700; color:#1f2937; }'
-    + '.logo-line { width:58px; height:3px; background:#f59e0b; margin-top:4px; }'
-    + '.title { font-size:22px; font-weight:700; color:#d97706; text-align:right; }'
-    + '.info-row { display:flex; justify-content:space-between; margin-bottom:16px; }'
-    + '.info-left { font-size:11px; color:#6b7280; line-height:1.7; }'
-    + '.seller-name { font-size:12px; font-weight:600; color:#1f2937; }'
-    + '.info-right { display:flex; flex-direction:column; gap:3px; }'
-    + '.ir-row { display:flex; gap:14px; font-size:11px; }'
-    + '.ir-label { color:#d97706; font-weight:600; min-width:42px; }'
-    + '.ir-val { color:#1f2937; }'
-    + 'hr.sep { border:none; border-top:1px solid #e5e7eb; margin:14px 0; }'
-    + '.cust-label { font-size:12px; font-weight:700; color:#d97706; margin-bottom:3px; }'
-    + '.cust-name { font-size:12px; color:#1f2937; margin-bottom:18px; }'
-    + 'table { width:100%; border-collapse:collapse; font-size:11px; }'
-    + 'th { background:#f3f4f6; font-weight:600; color:#1f2937; padding:7px 10px; border-top:1px solid #d1d5db; border-bottom:1px solid #d1d5db; text-align:left; font-size:10px; }'
-    + 'th:nth-child(n+3) { text-align:right; }'
-    + 'td { padding:6px 10px; border-bottom:1px solid #eee; }'
-    + 'hr.total-sep { border:none; border-top:1px solid #e5e7eb; margin:10px 0 4px; }'
-    + '.grand-row td { font-size:12px; font-weight:700; color:#d97706; padding-top:8px; }'
-    + '.grand-row td:last-child { color:#1f2937; }'
-    + '</style></head><body><div class="page">'
-    + '<div class="corner"></div>'
-    + '<div class="header">'
-    + '<div><div class="logo-big">Big</div><div class="logo-small">Ball</div><div class="logo-line"></div></div>'
-    + '<div class="title">ใบเสนอราคา</div>'
-    + '</div>'
-    + '<div class="info-row">'
-    + '<div class="info-left"><div class="seller-name">BIGBALL</div>บริษัท BIGBALL จำกัด</div>'
-    + '<div class="info-right">'
-    + '<div class="ir-row"><span class="ir-label">เลขที่</span><span class="ir-val">' + billNo + '</span></div>'
-    + '<div class="ir-row"><span class="ir-label">วันที่</span><span class="ir-val">' + (b.date || '-') + '</span></div>'
-    + '<div class="ir-row"><span class="ir-label">เครดิต</span><span class="ir-val">30 วัน</span></div>'
-    + '</div></div>'
-    + '<hr class="sep">'
-    + '<div class="cust-label">ลูกค้า</div>'
-    + '<div class="cust-name">' + b.billName + '</div>'
-    + '<table><thead><tr>'
-    + '<th style="width:40px;">#</th>'
-    + '<th>รายละเอียด</th>'
-    + '<th style="width:70px;">จำนวน</th>'
-    + '<th style="width:60px;">คิว</th>'
-    + '<th style="width:80px;">ยอดรวม</th>'
-    + '</tr></thead><tbody>'
-    + rowsHTML
-    + totalsHTML
-    + '</tbody></table>'
-    + '<hr class="total-sep">'
-    + '<table><tr class="grand-row">'
-    + '<td colspan="3"></td>'
-    + '<td style="text-align:right;">จำนวนเงินรวมทั้งสิ้น</td>'
-    + '<td style="text-align:right;">' + grandTotal.toLocaleString() + ' บาท</td>'
-    + '</tr></table>'
-    + '</div></body></html>';
-
-  const w = window.open('', '_blank');
-  w.document.write(html);
-  w.document.close();
-  setTimeout(() => w.print(), 600);
-}
-
-function editBeforePrint() {
-  if (previewBillIndex === null) return;
-  startEdit(previewBillIndex);
-  previewBillIndex = null;
-}
-
-function cancelPreview() {
-  previewBillIndex = null;
-  showPage('bill');
-}
-
-function renderPreview() {
-  if (previewBillIndex === null) return;
-  
-  const b = bills[previewBillIndex];
-  const dateClean = (b.date || '').replace(/-/g, '');
-  const billNo = 'QT' + dateClean + String(previewBillIndex + 1).padStart(4, '0');
-  const subtotal = b.price;
-  const grandTotal = b.payType === 'deposit' ? b.remaining : subtotal;
-
-  let itemsHTML = '';
-  b.items.forEach((it, idx) => {
-    itemsHTML += `
-      <div class="preview-item">
-        <span class="pi-num">${idx + 1}</span>
-        <span class="pi-name">${it.name}</span>
-        <span class="pi-qty">${it.qty} ชิ้น</span>
-        <span class="pi-queue">${it.queue} คิว</span>
-      </div>`;
-  });
-
-  let totalsHTML = `
-    <div class="preview-total-row">
-      <span class="pt-label">รวมเป็นเงิน</span>
-      <span class="pt-value">${subtotal.toLocaleString()} บาท</span>
-    </div>`;
-  
-  if (b.payType === 'deposit') {
-    totalsHTML += `
-      <div class="preview-total-row sub">
-        <span class="pt-label">มัดจำ</span>
-        <span class="pt-value">${b.deposit.toLocaleString()} บาท</span>
-      </div>
-      <div class="preview-total-row sub">
-        <span class="pt-label">คงเหลือ</span>
-        <span class="pt-value">${b.remaining.toLocaleString()} บาท</span>
-      </div>`;
-  }
-
-  document.getElementById('previewContent').innerHTML = `
-    <div class="preview-header">
-      <div class="ph-left">
-        <div class="ph-logo">Big<br><span style="font-size:26px;">Ball</span></div>
-        <div class="ph-company">บริษัท BIGBALL จำกัด</div>
-      </div>
-      <div class="ph-right">
-        <div class="ph-title">ใบเสนอราคา</div>
-        <div class="ph-info">
-          <div class="phi-row"><span>เลขที่:</span> <strong>${billNo}</strong></div>
-          <div class="phi-row"><span>วันที่:</span> <strong>${b.date || '-'}</strong></div>
-          <div class="phi-row"><span>เครดิต:</span> <strong>30 วัน</strong></div>
-        </div>
-      </div>
-    </div>
-    
-    <div class="preview-customer">
-      <div class="pc-label">ลูกค้า</div>
-      <div class="pc-name">${b.billName}</div>
-    </div>
-
-    <div class="preview-items">
-      <div class="preview-item-header">
-        <span style="width:40px;">#</span>
-        <span style="flex:1;">รายละเอียด</span>
-        <span style="width:70px;text-align:right;">จำนวน</span>
-        <span style="width:60px;text-align:right;">คิว</span>
-      </div>
-      ${itemsHTML}
-    </div>
-
-    <div class="preview-totals">
-      ${totalsHTML}
-      <div class="preview-grand">
-        <span class="pg-label">จำนวนเงินรวมทั้งสิ้น</span>
-        <span class="pg-value">${grandTotal.toLocaleString()} บาท</span>
-      </div>
-    </div>
-  `;
-}
-
-autoCleanup();
-render();
-renderRecall();
+let items=JSON.parse(localStorage.getItem('items'))||[];
+let bills=JSON.parse(localStorage.getItem('bills'))||[];
+let outItems=[];
+let currentPayType='pending';
+let billFilter='all';
+let selColor='yellow';
+let selIcon='🟡';
+let editingBillIndex=null;
+let editPayType='pending';
+let editItems=[];
+document.getElementById('billDate').value=new Date().toISOString().split('T')[0];
+function pickIcon(c,i){selColor=c;selIcon=i;document.querySelectorAll('.icon-opt').forEach(o=>o.classList.remove('sel'));event.target.classList.add('sel');}
+function getIconStyle(c){const s={red:{bg:'rgba(239,68,68,0.15)',color:'#ef4444'},orange:{bg:'rgba(249,115,22,0.15)',color:'#f97316'},yellow:{bg:'rgba(234,179,8,0.15)',color:'#eab308'},green:{bg:'rgba(34,197,94,0.15)',color:'#22c55e'},blue:{bg:'rgba(59,130,246,0.15)',color:'#3b82f6'},indigo:{bg:'rgba(99,102,241,0.15)',color:'#6366f1'},purple:{bg:'rgba(168,85,247,0.15)',color:'#a855f7'},pink:{bg:'rgba(236,72,153,0.15)',color:'#ec4899'},cyan:{bg:'rgba(6,182,212,0.15)',color:'#06b6d4'},teal:{bg:'rgba(20,184,166,0.15)',color:'#14b8a6'}};return s[c]||s.yellow;}
+function save(){localStorage.setItem('items',JSON.stringify(items));localStorage.setItem('bills',JSON.stringify(bills));}
+function showPage(p){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.topbar button').forEach(x=>x.classList.remove('active'));const map={stock:0,out:1,recall:2,bill:3};document.getElementById('page-'+p).classList.add('active');if(map[p]!==undefined)document.querySelectorAll('.topbar button')[map[p]].classList.add('active');}
+function setPayType(t){currentPayType=t;document.querySelectorAll('.pay-type-row button').forEach(b=>b.classList.remove('active-pay'));document.querySelector(`.pay-type-row button[data-type="${t}"]`).classList.add('active-pay');document.getElementById('depositDetail').style.display=(t==='deposit')?'block':'none';if(t!=='deposit')document.getElementById('depositAmt').value='';render();}
+function setBillFilter(f){billFilter=f;document.querySelectorAll('.filter-row button').forEach(b=>b.classList.remove('active-filter'));document.querySelector(`.filter-row button[data-filter="${f}"]`).classList.add('active-filter');render();}
+function addStock(){const n=document.getElementById('newItemName').value.trim();const q=Number(document.getElementById('newItemQty').value);if(!n||q<=0)return;const e=items.find(i=>i.name===n);if(e){e.qty+=q;e.color=selColor;e.icon=selIcon;}else{items.push({name:n,qty:q,color:selColor,icon:selIcon});}document.getElementById('newItemName').value='';document.getElementById('newItemQty').value='';save();render();}
+function deleteItem(i){if(!confirm(`ลบ "${items[i].name}" ออก?`))return;items.splice(i,1);save();render();}
+function addOutByQty(i){const qI=document.getElementById('outQty_'+i);const qQ=document.getElementById('outQueue_'+i);let q=Number(qI.value)||1;let qu=Number(qQ.value)||1;if(q<=0)q=1;if(qu<=0)qu=1;if(q>items[i].qty)q=items[i].qty;if(items[i].qty<=0)return;items[i].qty-=q;const b=outItems.find(x=>x.name===items[i].name);if(b){b.qty+=q;b.queue+=qu;}else{outItems.push({name:items[i].name,qty:q,queue:qu,color:items[i].color,icon:items[i].icon});}qI.value='';qQ.value='';save();render();}
+function removeOut(i){const b=outItems[i];const it=items.find(x=>x.name===b.name);if(it)it.qty++;b.qty--;if(b.qty>0&&b.queue>0)b.queue--;if(b.qty<=0)outItems.splice(i,1);save();render();}
+function confirmBill(){if(!outItems.length){alert('ยังไม่มีสินค้าในบิล');return;}const p=Number(document.getElementById('billPrice').value)||0;const d=(currentPayType==='deposit')?(Number(document.getElementById('depositAmt').value)||0):0;bills.push({billName:document.getElementById('billName').value||'ไม่ระบุ',date:document.getElementById('billDate').value,price:p,payType:currentPayType,deposit:d,remaining:(currentPayType==='deposit')?Math.max(p-d,0):(currentPayType==='paid'?0:p),status:currentPayType==='paid'?'paid':'pending',items:JSON.parse(JSON.stringify(outItems))});outItems=[];document.getElementById('billName').value='';document.getElementById('billPrice').value='';document.getElementById('depositAmt').value='';setPayType('pending');save();render();showPage('bill');}
+function markPaid(i){bills[i].items.forEach(b=>{const it=items.find(x=>x.name===b.name);if(it)it.qty+=b.qty;});bills[i].status='paid';bills[i].remaining=0;bills[i].paidAt=Date.now();save();render();}
+function clearBill(i){bills[i].items.forEach(b=>{const it=items.find(x=>x.name===b.name);if(it)it.qty+=b.qty;});bills.splice(i,1);save();render();}
+function autoCleanup(){const OM=30*24*60*60*1000;const now=Date.now();const before=bills.length;bills=bills.filter(b=>{if(b.status==='paid'&&b.paidAt&&(now-b.paidAt)>OM)return false;return true;});if(bills.length!==before)save();}
+function deletePaidBill(i){bills.splice(i,1);save();render();}
+function clearAllPaid(){const c=bills.filter(b=>b.status==='paid').length;if(!c)return;if(!confirm(`ลบบิลจ่ายแล้วทั้งหมด ${c} บิล?`))return;bills=bills.filter(b=>b.status!=='paid');save();render();}
+const OVERDUE_DAYS=7;
+function getDaysSince(d){const dt=new Date(d);const now=new Date();return Math.floor((now-dt)/(1000*60*60*24));}
+function returnItem(bI,iN){const bill=bills[bI];const item=bill.items.find(x=>x.name===iN);if(!item||item.qty<=0)return;const stock=items.find(x=>x.name===iN);if(stock)stock.qty++;item.qty--;bill.items=bill.items.filter(x=>x.qty>0);if(bill.items.length===0){bill.status='paid';bill.remaining=0;bill.paidAt=Date.now();}save();render();renderRecall();}
+function renderRecall(){const p=bills.map((b,i)=>({...b,idx:i})).filter(b=>b.status==='pending');const o=p.filter(b=>getDaysSince(b.date)>OVERDUE_DAYS);const bn=document.getElementById('overdueWarning');if(o.length>0){bn.style.display='block';document.getElementById('overdueSubText').textContent=o.length+' บิล เกิน '+OVERDUE_DAYS+' วัน รอคืน';}else{bn.style.display='none';}const badge=document.getElementById('recallBadge');if(o.length>0){badge.style.display='inline-block';badge.textContent=o.length;}else{badge.style.display='none';}document.getElementById('recallList').innerHTML=p.length?p.map((b,ri)=>{const d=getDaysSince(b.date);const isO=d>OVERDUE_DAYS;return `<div class="recall-card ${isO?'overdue-card':''}" style="animation-delay:${ri*.05}s"><div class="recall-header"><div><div class="recall-name">${b.billName}</div><div class="recall-date">เช่าตั้งแต่ ${b.date}</div></div><span class="${isO?'overdue-days':'ok-days'}">${isO?'⚡ เกิน '+d+' วัน':d+' วัน'}</span></div><div>${b.items.map(it=>{const st=getIconStyle(it.color||'yellow');return `<div class="return-item"><div class="ri-left"><div class="ri-icon" style="background:${st.bg};color:${st.color};">${it.icon||'📦'}</div><div><div class="ri-name">${it.name}</div><div class="ri-qty">คงอยู่กับลูกค้า ${it.qty} ชิ้น</div></div></div><div class="ri-controls"><button onclick="returnItem(${b.idx},'${it.name}')" class="ri-done">↩ คืน</button></div></div>`;}).join('')}</div></div>`;}).join(''):'<div class="empty-state"><div class="empty-icon">✅</div>ไม่มีของที่รอคืน</div>';}
+function getBadgeHTML(b){if(b.status==='paid')return '<span class="badge paid">✓ จ่ายแล้ว</span>';if(b.payType==='deposit')return '<span class="badge deposit">💰 มัดจำ</span>';return '<span class="badge invoiced">📋 วางบิล</span>';}
+function startEdit(bI){const b=bills[bI];if(b.status==='paid'){alert('ไม่สามารถแก้ไขบิลที่จ่ายแล้ว');return;}editingBillIndex=bI;editPayType=b.payType;editItems=JSON.parse(JSON.stringify(b.items));document.getElementById('editBillName').value=b.billName;document.getElementById('editBillDate').value=b.date;document.getElementById('editBillPrice').value=b.price;document.getElementById('editDepositAmt').value=b.deposit||'';setEditPayType(editPayType);renderEdit();showPage('edit');}
+function setEditPayType(t){editPayType=t;document.querySelectorAll('#page-edit .pay-type-row button').forEach(b=>b.classList.remove('active-pay'));document.querySelector(`#page-edit .pay-type-row button[data-type="${t}"]`).classList.add('active-pay');document.getElementById('editDepositDetail').style.display=(t==='deposit')?'block':'none';if(t!=='deposit')document.getElementById('editDepositAmt').value='';renderEdit();}
+function editItemQtyChange(iN,d){const it=editItems.find(x=>x.name===iN);if(!it)return;const st=items.find(x=>x.name===iN);if(d>0){if(st&&st.qty>0){it.qty++;st.qty--;}}else{if(it.qty>0){it.qty--;if(st)st.qty++;}}editItems=editItems.filter(x=>x.qty>0);save();renderEdit();}
+function removeEditItem(iN){const it=editItems.find(x=>x.name===iN);if(!it)return;const st=items.find(x=>x.name===iN);if(st)st.qty+=it.qty;editItems=editItems.filter(x=>x.name!==iN);save();renderEdit();}
+function addEditItemByQty(sI){const qI=document.getElementById('editAddQty_'+sI);const qQ=document.getElementById('editAddQueue_'+sI);let q=Number(qI.value)||1;let qu=Number(qQ.value)||1;if(q<=0)q=1;if(qu<=0)qu=1;if(q>items[sI].qty)q=items[sI].qty;if(items[sI].qty<=0)return;items[sI].qty-=q;const e=editItems.find(x=>x.name===items[sI].name);if(e){e.qty+=q;e.queue+=qu;}else{editItems.push({name:items[sI].name,qty:q,queue:qu,color:items[sI].color,icon:items[sI].icon});}qI.value='';qQ.value='';save();renderEdit();}
+function saveEdit(){if(!editItems.length){alert('ต้องมีสินค้าในบิลอย่างน้อย 1 รายการ');return;}const p=Number(document.getElementById('editBillPrice').value)||0;const d=(editPayType==='deposit')?(Number(document.getElementById('editDepositAmt').value)||0):0;bills[editingBillIndex]={...bills[editingBillIndex],billName:document.getElementById('editBillName').value||'ไม่ระบุ',date:document.getElementById('editBillDate').value,price:p,payType:editPayType,deposit:d,remaining:(editPayType==='deposit')?Math.max(p-d,0):(editPayType==='paid'?0:p),status:editPayType==='paid'?'paid':'pending',items:JSON.parse(JSON.stringify(editItems))};save();cancelEdit();render();showPage('bill');}
+function cancelEdit(){const oB=bills[editingBillIndex];if(oB){oB.items.forEach(o=>{const c=editItems.find(x=>x.name===o.name);const df=o.qty-(c?c.qty:0);if(df>0){const st=items.find(x=>x.name===o.name);if(st)st.qty+=df;}else if(df<0){const st=items.find(x=>x.name===o.name);if(st)st.qty+=df;}});editItems.forEach(e=>{const inO=oB.items.find(x=>x.name===e.name);if(!inO){const st=items.find(x=>x.name===e.name);if(st)st.qty+=e.qty;}});}editingBillIndex=null;editItems=[];editPayType='pending';save();render();showPage('bill');}
+function renderEdit(){if(editingBillIndex===null)return;const iC=editItems.reduce((s,i)=>s+i.qty,0);document.getElementById('editItemCount').textContent=iC;document.getElementById('editItemsList').innerHTML=editItems.length?editItems.map((it,idx)=>{const st=getIconStyle(it.color||'yellow');return `<div class="edit-item" style="animation-delay:${idx*.04}s"><div class="item-left"><div class="item-icon" style="background:${st.bg};color:${st.color};">${it.icon||'✏️'}</div><div><div class="item-name">${it.name}</div><div class="item-qty" style="font-size:11px;color:var(--text-3);">${it.qty} ชิ้น • ${it.queue} คิว</div></div></div><div class="edit-controls"><button onclick="editItemQtyChange('${it.name}',-1)">−</button><span class="qty-val">${it.qty}</span><button onclick="editItemQtyChange('${it.name}',1)">+</button><button class="remove-edit-item" onclick="removeEditItem('${it.name}')">🗑</button></div></div>`;}).join(''):'<div class="empty-state"><div class="empty-icon">📦</div>ยังไม่มีสินค้าในบิล</div>';const g={};items.forEach((it,i)=>{const k=it.color||'yellow';if(!g[k])g[k]=[];g[k].push({...it,idx:i});});const cO=['red','orange','yellow','green','blue','indigo','purple','pink','cyan','teal'];const sK=cO.filter(c=>g[c]);let sH='';const cN={red:'แดง',orange:'ส้ม',yellow:'เหลือง',green:'เขียว',blue:'น้ำเงิน',indigo:'คราม',purple:'ม่วง',pink:'ชมพู',cyan:'ฟ้า',teal:'เขียวอมฟ้า'};sK.forEach(k=>{const gr=g[k];if(!gr)return;sH+=`<div class="cat-section-title"><span class="cat-label">${cN[k]||k}</span><span class="cat-line"></span><span class="cat-count">${gr.length} รายการ</span></div>`;sH+=gr.map((it,ri)=>{const st=getIconStyle(it.color);return `<div class="stock-item" style="animation-delay:${ri*.04}s"><div class="item-left"><div class="item-icon" style="background:${st.bg};color:${st.color};">${it.icon}</div><div><div class="item-name">${it.name}</div><div class="item-qty">${it.qty} ชิ้นคงเหลือ</div></div></div><div class="out-qty-wrap"><input type="number" min="1" max="${it.qty}" placeholder="ชิ้น" class="out-qty-input" id="editAddQty_${it.idx}" onkeydown="if(event.key==='Enter')document.getElementById('editAddQueue_${it.idx}').focus()"><input type="number" min="1" placeholder="คิว" class="out-qty-input" id="editAddQueue_${it.idx}" onkeydown="if(event.key==='Enter')addEditItemByQty(${it.idx})"><button class="add-out-btn" onclick="addEditItemByQty(${it.idx})">เพิ่ม</button></div></div>`;}).join('');});document.getElementById('editAddStock').innerHTML=sH||'<div class="empty-state"><div class="empty-icon">📦</div>ไม่มีสินค้าเหลือ</div>';const tP=Number(document.getElementById('editBillPrice').value)||0;const dA=Number(document.getElementById('editDepositAmt').value)||0;const rm=Math.max(tP-dA,0);document.getElementById('editDepRemaining').textContent='คงเหลือ '+rm.toLocaleString();}
+function render(){document.getElementById('stockCount').textContent=items.length+' รายการ';const g={};items.forEach((it,i)=>{const k=it.color||'yellow';if(!g[k])g[k]=[];g[k].push({...it,idx:i});});const cO=['red','orange','yellow','green','blue','indigo','purple','pink','cyan','teal'];const sK=cO.filter(c=>g[c]);let sH='';const cN={red:'แดง',orange:'ส้ม',yellow:'เหลือง',green:'เขียว',blue:'น้ำเงิน',indigo:'คราม',purple:'ม่วง',pink:'ชมพู',cyan:'ฟ้า',teal:'เขียวอมฟ้า'};sK.forEach(k=>{const gr=g[k];if(!gr)return;sH+=`<div class="cat-section-title"><span class="cat-label">${cN[k]||k}</span><span class="cat-line"></span><span class="cat-count">${gr.length} รายการ</span></div>`;sH+=gr.map((it,ri)=>{const st=getIconStyle(it.color);return `<div class="stock-item" style="animation-delay:${ri*.04}s"><div class="item-left"><div class="item-icon" style="background:${st.bg};color:${st.color};">${it.icon}</div><div><div class="item-name">${it.name}</div><div class="item-qty">คงเหลือ ${it.qty} ชิ้น</div></div></div><div class="controls"><button onclick="items[${it.idx}].qty--;save();render();" title="ลด">−</button><span class="qty-val">${it.qty}</span><button onclick="items[${it.idx}].qty++;save();render();" title="เพิ่ม">+</button><button class="del-btn" onclick="deleteItem(${it.idx})" title="ลบสินค้า">🗑</button></div></div>`;}).join('');});document.getElementById('stockList').innerHTML=sH||'<div class="empty-state"><div class="empty-icon">📦</div>ยังไม่มีสินค้า</div>';const oG={};items.forEach((it,i)=>{const k=it.color||'yellow';if(!oG[k])oG[k]=[];oG[k].push({...it,idx:i});});const oSK=cO.filter(c=>oG[c]);let oSH='';oSK.forEach(k=>{const gr=oG[k];if(!gr)return;oSH+=`<div class="cat-section-title"><span class="cat-label">${cN[k]||k}</span><span class="cat-line"></span><span class="cat-count">${gr.length} รายการ</span></div>`;oSH+=gr.map((it,ri)=>{const st=getIconStyle(it.color);return `<div class="stock-item" style="animation-delay:${ri*.04}s"><div class="item-left"><div class="item-icon" style="background:${st.bg};color:${st.color};">${it.icon}</div><div><div class="item-name">${it.name}</div><div class="item-qty">${it.qty} ชิ้นคงเหลือ</div></div></div><div class="out-qty-wrap"><input type="number" min="1" max="${it.qty}" placeholder="ชิ้น" class="out-qty-input" id="outQty_${it.idx}" onkeydown="if(event.key==='Enter')document.getElementById('outQueue_${it.idx}').focus()"><input type="number" min="1" placeholder="คิว" class="out-qty-input" id="outQueue_${it.idx}" onkeydown="if(event.key==='Enter')addOutByQty(${it.idx})"><button class="add-out-btn" onclick="addOutByQty(${it.idx})">เพิ่ม</button></div></div>`;}).join('');});document.getElementById('outStock').innerHTML=oSH||'<div class="empty-state"><div class="empty-icon">📦</div>ยังไม่มีสินค้า</div>';const oT=outItems.reduce((s,o)=>s+o.qty,0);document.getElementById('outCount').textContent=oT;document.getElementById('outBill').innerHTML=outItems.length?outItems.map((b,i)=>{const st=getIconStyle(b.color||'yellow');return `<div class="stock-item" style="animation-delay:${i*.04}s"><div class="item-left"><div class="item-icon" style="background:${st.bg};color:${st.color};">${b.icon||'✓'}</div><div><div class="item-name">${b.name}</div><div class="item-qty">${b.qty} ชิ้น • ${b.queue} คิว</div></div></div><button class="remove-out-btn" onclick="removeOut(${i})">−</button></div>`;}).join(''):'<div class="empty-state"><div class="empty-icon">🧾</div>ยังไม่มีสินค้าในบิล</div>';const tP=Number(document.getElementById('billPrice').value)||0;const dA=Number(document.getElementById('depositAmt').value)||0;const rm=Math.max(tP-dA,0);document.getElementById('depRemaining').textContent='คงเหลือ '+rm.toLocaleString();const cA=bills.length;const cP=bills.filter(b=>b.status==='pending'&&b.payType==='pending').length;const cD=bills.filter(b=>b.payType==='deposit'&&b.status==='pending').length;const cPd=bills.filter(b=>b.status==='paid').length;document.getElementById('fc-all').textContent=cA;document.getElementById('fc-pending').textContent=cP;document.getElementById('fc-deposit').textContent=cD;document.getElementById('fc-paid').textContent=cPd;const pC=bills.filter(b=>b.status==='paid').length;const sC=(billFilter==='paid'&&pC>0);document.getElementById('clearPaidRow').style.display=sC?'block':'none';document.getElementById('clearPaidCount').textContent=pC+' บิล';let f=bills.map((b,i)=>({...b,idx:i}));if(billFilter==='pending')f=f.filter(b=>b.status==='pending'&&b.payType==='pending');if(billFilter==='deposit')f=f.filter(b=>b.payType==='deposit'&&b.status==='pending');if(billFilter==='paid')f=f.filter(b=>b.status==='paid');document.getElementById('billList').innerHTML=f.length?f.map((b,ri)=>`<div class="bill-card" style="animation-delay:${ri*.05}s;${b.status==='paid'?'opacity:.65;':''}"><div class="bill-header"><div><div class="bill-name">${b.billName}</div><div class="bill-meta">${b.date}</div></div>${getBadgeHTML(b)}</div><div class="bill-items-list">${b.items.map(it=>`<span class="tag">${it.name} ${it.qty}ชิ้น•${it.queue}คิว</span>`).join('')}</div><div class="bill-price">${b.price.toLocaleString()} <span>บาท</span>${b.payType==='deposit'?`<span style="margin-left:10px;font-size:12px;color:${b.status==='paid'?'var(--text-3)':'var(--warning)'};font-family:'Kanit';font-weight:500;">มัดจำ ${b.deposit.toLocaleString()} • คงเหลือ <strong>${b.remaining.toLocaleString()}</strong></span>`:''}</div>${b.status==='pending'?`<div class="bill-actions"><button class="main secondary" onclick="generatePDF(${b.idx})"><i class="fas fa-file-pdf"></i> ออกบิล</button><button class="main" onclick="startEdit(${b.idx})" style="background:linear-gradient(135deg,var(--warning),#fcd34d);color:#78350f;"><i class="fas fa-edit"></i> แก้ไข</button></div><div class="bill-actions" style="margin-top:8px;"><button class="main success" onclick="markPaid(${b.idx})"><i class="fas fa-check"></i> จ่ายแล้ว</button><button class="main danger" onclick="clearBill(${b.idx})"><i class="fas fa-trash"></i> ลบ</button></div>`:`<div class="bill-actions"><button class="main secondary" onclick="generatePDF(${b.idx})"><i class="fas fa-file-pdf"></i> ออกบิล</button><button class="main danger" onclick="deletePaidBill(${b.idx})"><i class="fas fa-trash"></i> ลบบิล</button></div>`}</div>`).join(''):'<div class="empty-state"><div class="empty-icon">📋</div>ไม่มีบิลในประเภทนี้</div>';renderRecall();}
+let previewBillIndex=null;
+function generatePDF(i){previewBillIndex=i;renderPreview();showPage('preview');}
+function printPDF(){if(previewBillIndex===null)return;const b=bills[previewBillIndex];const dC=(b.date||'').replace(/-/g,'');const bNo='QT'+dC+String(previewBillIndex+1).padStart(4,'0');const st=b.price;const gT=b.payType==='deposit'?b.remaining:st;let rH='';b.items.forEach((it,idx)=>{rH+='<tr style="'+(idx%2===1?'background:#f9fafb;':'')+'"><td style="text-align:center;">'+(idx+1)+'</td><td>'+it.name+'</td><td style="text-align:right;">'+it.qty+' ชิ้น</td><td style="text-align:right;">'+it.queue+' คิว</td><td style="text-align:right;">-</td></tr>';});let tH='<tr><td colspan="3"></td><td style="text-align:right;color:#6b7280;font-weight:600;padding-top:10px;">รวมเป็นเงิน</td><td style="text-align:right;padding-top:10px;">'+st.toLocaleString()+' บาท</td></tr>';if(b.payType==='deposit'){tH+='<tr><td colspan="3"></td><td style="text-align:right;color:#6b7280;font-weight:600;">มัดจำ</td><td style="text-align:right;">'+b.deposit.toLocaleString()+' บาท</td></tr><tr><td colspan="3"></td><td style="text-align:right;color:#6b7280;font-weight:600;">คงเหลือ</td><td style="text-align:right;">'+b.remaining.toLocaleString()+' บาท</td></tr>';}const h='<!DOCTYPE html><html lang="th"><head><meta charset="UTF-8"><title>BIGBALL '+bNo+'</title><link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet"><style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:"Kanit",sans-serif;color:#1f2937;padding:40px 48px;background:#fff;}@media print{body{padding:28px 40px;}@page{size:A4;margin:0;}}.page{position:relative;width:100%;}.corner{position:absolute;top:0;right:0;width:0;height:0;border-style:solid;border-width:0 70px 70px 0;border-color:transparent #f59e0b transparent transparent;}.header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;}.logo-big{font-size:22px;font-weight:700;color:#1f2937;line-height:1.1;}.logo-small{font-size:26px;font-weight:700;color:#1f2937;}.logo-line{width:58px;height:3px;background:#f59e0b;margin-top:4px;}.title{font-size:22px;font-weight:700;color:#d97706;text-align:right;}.info-row{display:flex;justify-content:space-between;margin-bottom:16px;}.info-left{font-size:11px;color:#6b7280;line-height:1.7;}.seller-name{font-size:12px;font-weight:600;color:#1f2937;}.info-right{display:flex;flex-direction:column;gap:3px;}.ir-row{display:flex;gap:14px;font-size:11px;}.ir-label{color:#d97706;font-weight:600;min-width:42px;}.ir-val{color:#1f2937;}hr.sep{border:none;border-top:1px solid #e5e7eb;margin:14px 0;}.cust-label{font-size:12px;font-weight:700;color:#d97706;margin-bottom:3px;}.cust-name{font-size:12px;color:#1f2937;margin-bottom:18px;}table{width:100%;border-collapse:collapse;font-size:11px;}th{background:#f3f4f6;font-weight:600;color:#1f2937;padding:7px 10px;border-top:1px solid #d1d5db;border-bottom:1px solid #d1d5db;text-align:left;font-size:10px;}th:nth-child(n+3){text-align:right;}td{padding:6px 10px;border-bottom:1px solid #eee;}hr.total-sep{border:none;border-top:1px solid #e5e7eb;margin:10px 0 4px;}.grand-row td{font-size:12px;font-weight:700;color:#d97706;padding-top:8px;}.grand-row td:last-child{color:#1f2937;}</style></head><body><div class="page"><div class="corner"></div><div class="header"><div><div class="logo-big">Big</div><div class="logo-small">Ball</div><div class="logo-line"></div></div><div class="title">ใบเสนอราคา</div></div><div class="info-row"><div class="info-left"><div class="seller-name">BIGBALL</div>บริษัท BIGBALL จำกัด</div><div class="info-right"><div class="ir-row"><span class="ir-label">เลขที่</span><span class="ir-val">'+bNo+'</span></div><div class="ir-row"><span class="ir-label">วันที่</span><span class="ir-val">'+(b.date||'-')+'</span></div><div class="ir-row"><span class="ir-label">เครดิต</span><span class="ir-val">30 วัน</span></div></div></div><hr class="sep"><div class="cust-label">ลูกค้า</div><div class="cust-name">'+b.billName+'</div><table><thead><tr><th style="width:40px;">#</th><th>รายละเอียด</th><th style="width:70px;">จำนวน</th><th style="width:60px;">คิว</th><th style="width:80px;">ยอดรวม</th></tr></thead><tbody>'+rH+tH+'</tbody></table><hr class="total-sep"><table><tr class="grand-row"><td colspan="3"></td><td style="text-align:right;">จำนวนเงินรวมทั้งสิ้น</td><td style="text-align:right;">'+gT.toLocaleString()+' บาท</td></tr></table></div></body></html>';const w=window.open('','_blank');w.document.write(h);w.document.close();setTimeout(()=>w.print(),600);}
+function editBeforePrint(){if(previewBillIndex===null)return;startEdit(previewBillIndex);previewBillIndex=null;}
+function cancelPreview(){previewBillIndex=null;showPage('bill');}
+function renderPreview(){if(previewBillIndex===null)return;const b=bills[previewBillIndex];const dC=(b.date||'').replace(/-/g,'');const bNo='QT'+dC+String(previewBillIndex+1).padStart(4,'0');const st=b.price;const gT=b.payType==='deposit'?b.remaining:st;let iH='';b.items.forEach((it,idx)=>{iH+=`<div class="preview-item"><span class="pi-num">${idx+1}</span><span class="pi-name">${it.name}</span><span class="pi-qty">${it.qty} ชิ้น</span><span class="pi-queue">${it.queue} คิว</span></div>`;});let tH=`<div class="preview-total-row"><span class="pt-label">รวมเป็นเงิน</span><span class="pt-value">${st.toLocaleString()} บาท</span></div>`;if(b.payType==='deposit'){tH+=`<div class="preview-total-row sub"><span class="pt-label">มัดจำ</span><span class="pt-value">${b.deposit.toLocaleString()} บาท</span></div><div class="preview-total-row sub"><span class="pt-label">คงเหลือ</span><span class="pt-value">${b.remaining.toLocaleString()} บาท</span></div>`;}document.getElementById('previewContent').innerHTML=`<div class="preview-header"><div class="ph-left"><div class="ph-logo">Big<br><span style="font-size:26px;">Ball</span></div><div class="ph-company">บริษัท BIGBALL จำกัด</div></div><div class="ph-right"><div class="ph-title">ใบเสนอราคา</div><div class="ph-info"><div class="phi-row"><span>เลขที่:</span> <strong>${bNo}</strong></div><div class="phi-row"><span>วันที่:</span> <strong>${b.date||'-'}</strong></div><div class="phi-row"><span>เครดิต:</span> <strong>30 วัน</strong></div></div></div></div><div class="preview-customer"><div class="pc-label">ลูกค้า</div><div class="pc-name">${b.billName}</div></div><div class="preview-items"><div class="preview-item-header"><span style="width:40px;">#</span><span style="flex:1;">รายละเอียด</span><span style="width:70px;text-align:right;">จำนวน</span><span style="width:60px;text-align:right;">คิว</span></div>${iH}</div><div class="preview-totals">${tH}<div class="preview-grand"><span class="pg-label">จำนวนเงินรวมทั้งสิ้น</span><span class="pg-value">${gT.toLocaleString()} บาท</span></div></div>`;}
+autoCleanup();render();renderRecall();
 </script>
-
 </body>
 </html>
